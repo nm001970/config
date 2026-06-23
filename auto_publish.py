@@ -57,21 +57,10 @@ def get_git_status_lines():
 
 
 def extract_status_path(status_line):
-    """
-    نمونه‌ها:
-      M public_configs.json
-      M  public_configs.json
-      A  file.py
-      D  file.py
-      ?? file.py
-    """
     if status_line.startswith("?? "):
         return status_line[3:].strip()
 
-    if len(status_line) >= 4:
-        return status_line[3:].strip()
-
-    return status_line
+    return status_line[2:].strip()
 
 
 def ensure_only_public_configs_changed():
