@@ -54,7 +54,7 @@ async def start_handler(message: Message):
         first_name=message.from_user.first_name
     )
 
-    if user["create"]:
+    if user["creat_at"]:
         text = (
             "🚀 به MN Proxy خوش آمدید.\n\n"
             "اشتراک رایگان ۱۰ روزه شما فعال شد.\n\n"
