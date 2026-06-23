@@ -1,0 +1,25 @@
+.env
+.venv
+configs.db
+configs_before_*.db
+temp_config.json
+temp_configs/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+logs/
+tools/xray/
+*.db-journal
+public_configs.json.tmp
+export_public_configs_before_pool.py
+subscription_api_before_pool.py
+database/repositories/public_config_repository_before_pool.py
+users.db
+export_public_configs_before_delivery_score.py
+export_public_config.py
+database/repositories/bot_user_repository_before_user_db.py
+# Local temporary scripts
+test.py
+test_summary.py
+remove_db.py
