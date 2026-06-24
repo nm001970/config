@@ -11,8 +11,8 @@ from worker.config_sanitizer import sanitize_config_for_delivery
 
 EXPORT_PATH = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
 
-HOT_LIMIT = int(os.getenv("PUBLIC_HOT_LIMIT", "10"))
-RESERVE_LIMIT = int(os.getenv("PUBLIC_RESERVE_LIMIT", "90"))
+HOT_LIMIT = int(os.getenv("PUBLIC_HOT_LIMIT", "5"))
+RESERVE_LIMIT = int(os.getenv("PUBLIC_RESERVE_LIMIT", "40"))
 
 # برای اینکه diversity خوب داشته باشیم، بیشتر از ۵۰تا candidate می‌خوانیم.
 CANDIDATE_MULTIPLIER = int(os.getenv("PUBLIC_CANDIDATE_MULTIPLIER", "10"))

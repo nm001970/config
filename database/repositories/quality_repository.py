@@ -30,46 +30,80 @@ def claim_quality_batch(limit=5):
     session.close()
     return ids
 
+def safe_float(value, default=0.0):
+    try:
+        if value is None:
+            return default
+        return float(value)
+    except Exception:
+        return default
+
 def calculate_quality_score(
         ping_avg_ms,
         download_mbps,
         upload_mbps,
         success_count=0,
-        fail_count=0
+        fail_count=0,
+        latency_ms= None
 ):
-    score = 0
+    
+    ping= safe_float(ping_avg_ms)
+    download= safe_float(download_mbps)
+    upload= safe_float(upload_mbps)
+    latency= safe_float(latency_ms)
 
-    if ping_avg_ms and ping_avg_ms > 0:
-        if ping_avg_ms <= 500:
-            score +=40
-        elif ping_avg_ms <= 1000:
-            score +=30
-        elif ping_avg_ms <= 2000:
+    success_count= int(success_count or 0)
+    fail_count= int(fail_count or 0)
+    score = 0.0
+
+    if download >= 8:
+        score += 50
+    elif download >=5:
+        score += 45
+    elif download >=3:
+        score += 38
+    elif download >=2:
+        score += 32
+    elif download >=1:
+        score += 22
+    elif download >= 0.5:
+        score +=12
+    elif download >0:
+        score +=5
+
+    if ping > 0:
+        if ping <= 150:
+            score += 25
+        elif ping <= 450:
             score +=20
-        else:
+        elif ping <= 750:
+            score += 14
+        elif ping <= 900:
+            score += 3
+
+    if latency >0:
+        if latency <= 200:
             score += 10
-
-    if download_mbps and download_mbps > 0:
-        if download_mbps >= 2:
-            score +=20
-        elif download_mbps >= 0.5:
-            score +=15
-        else:
+        elif latency <= 500:
+            score +=8
+        elif latency <=800:
             score +=5
-    
-    if upload_mbps and upload_mbps > 0 :
-        if upload_mbps >= 2:
-            score +=20
-        elif upload_mbps >= 0.5:
-            score += 15
-        else : 
-            score += 5
-    
-    
-    score += success_count *2
-    score -= fail_count
+        elif latency <= 1000:
+            score += 2
 
-    return max(round(score, 2), 0)
+    if upload >= 2:
+        score += 10
+    elif upload >= 1:
+        score += 8
+    elif upload >= 0.5:
+        score += 5
+    elif upload > 0:
+        score += 2
+    
+    score += min(success_count, 3)* 1.5
+    score -= min(fail_count, 5) *2
+
+    return max(min(round(score, 2), 100), 0)
 
 def update_quality_result(config_id, result):
     session = SessionLocal()
@@ -105,7 +139,8 @@ def update_quality_result(config_id, result):
         download,
         upload,
         row.success_count,
-        row.fail_count
+        row.fail_count,
+        row.latency
     )
 
     row.ping_min_ms = ping_min
@@ -128,7 +163,7 @@ def update_quality_result(config_id, result):
     
     row.quality_error= "|".join(error_parts) if error_parts else None
 
-    if ping_avg > 0 and download > 0 and score >= 15:
+    if ping_avg > 0 and download > 0.5 and score >= 45:
         row.quality_status = "qualified"
     
     else:

@@ -5,7 +5,7 @@ from urllib.parse import urlsplit, parse_qs
 
 
 PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
-EXPECTED_HOT_LIMIT = int(os.getenv("SUBSCRIPTION_CONFIG_LIMIT", "10"))
+EXPECTED_HOT_LIMIT = int(os.getenv("SUBSCRIPTION_CONFIG_LIMIT", "5"))
 
 BLOCKED_MARKERS = [
     "trycloudflare",
