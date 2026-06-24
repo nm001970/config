@@ -52,44 +52,47 @@ def test_connectivity(socks_port):
         "error": last_error
     }
 
-def test_http_ping(socks_port, attempts=3):
-    proxise= _make_proxies(socks_port)
+def test_http_ping(socks_port, attempts=2):
+    proxies = _make_proxies(socks_port)
 
-    latencies= []
-    last_error= None
+    latencies = []
+    errors = []
 
-    for _ in range(attempts):
-        try:
-            start= time.perf_counter()
+    for url in PING_URLS:
+        for _ in range(attempts):
+            try:
+                start = time.perf_counter()
 
-            response= requests.get(
-                PING_URLS[0],
-                proxies= proxise,
-                timeout=(3, 8),
-                headers={
-                    "User-Agent": "Mozilla/5.0"
-                }
-            )
+                response = requests.get(
+                    url,
+                    proxies=proxies,
+                    timeout=(3, 8),
+                    headers={
+                        "User-Agent": "Mozilla/5.0"
+                    }
+                )
 
-            elapsed_ms = (
-                time.perf_counter() - start
-            )* 1000
+                elapsed_ms = (
+                    time.perf_counter() - start
+                ) * 1000
 
-            if response.status_code == 200:
-                latencies.append(elapsed_ms)
-            else:
-                last_error= f"HTTP {response.status_code}"
+                if response.status_code == 200:
+                    latencies.append(elapsed_ms)
+                    break
 
-        except Exception as e:
-            last_error= repr(e)
+                errors.append(f"{url} HTTP {response.status_code}")
+
+            except Exception as e:
+                errors.append(f"{url} -> {repr(e)}")
 
     if not latencies:
-        return{
+        return {
             "ok": False,
             "min_ms": None,
             "avg_ms": None,
-            "error": last_error
+            "error": " | ".join(errors[-3:]) if errors else "ping failed"
         }
+
     return {
         "ok": True,
         "min_ms": round(min(latencies), 2),

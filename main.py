@@ -9,6 +9,11 @@ from worker.config_sanitizer import sanitize_configs_for_storage
 
 from runners.connectivity_runner import run_connectivity_scan
 from runners.quality_runner import run_quality_scan
+from runners.public_health_runner import (
+    run_hot_health_scan,
+    run_reserve_health_scan,
+    run_public_health_scan
+)
 
 from database.repositories.maintenance_repository import (
     reset_stuck_connectivity,
@@ -78,6 +83,20 @@ def summary():
     for item in get_top_qualified(limit=10):
         print(item)
 
+def hot_health():
+    tested = run_hot_health_scan()
+    print(f"HOTHEALTH TESTED: {tested}")
+    return tested
+
+def reserve_health():
+    tested= run_reserve_health_scan()
+    print(f"RESERVE HEALTH TESTED: {tested}")
+    return tested
+
+def public_health():
+    tested = run_public_health_scan()
+    print(f"PUBLIC HEALTH TESTED: {tested}")
+    return tested
 
 def run_all():
     maintenance()
@@ -205,6 +224,9 @@ def print_usage():
     print("python main.py summary")
     print("python main.py all")
     print("python main.py fullcycle")
+    print("python main.py hot-health")
+    print("python main.py reserve-health")
+    print("python main.py public-health")
 
 
 if __name__ == "__main__":
@@ -242,6 +264,15 @@ if __name__ == "__main__":
 
     elif command == "fullcycle":
         fullcycle()
+
+    elif command == "hot-health":
+        hot_health()
+
+    elif command == "reserve-health":
+        reserve_health()
+
+    elif command == "public-health":
+        public_health()
 
     else:
         print(f"Unknown command: {command}")
