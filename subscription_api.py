@@ -53,7 +53,7 @@ def get_active_subscription_user(token: str):
     return user
 
 
-def get_subscription_raw_text(limit: int = 20):
+def get_subscription_raw_text(limit: int = SUBSCRIPTION_CONFIG_LIMIT):
     lines = get_public_configs_for_subscription(limit=limit)
 
     if not lines:
