@@ -1,6 +1,6 @@
 from worker.builders.vless_builder import build as build_vless
 from worker.builders.vmess_builder import build as build_vmess
-
+from worker.builders.ss_builder import build as build_ss
 
 def build_xray_config(config, socks_port):
     if config.protocol == "vless":
@@ -8,6 +8,9 @@ def build_xray_config(config, socks_port):
 
     if config.protocol == "vmess":
         return build_vmess(config, socks_port)
+    
+    if config.protocol == "ss":
+        return build_ss(config, socks_port)
 
     raise ValueError(
         f"Unsupported protocol: {config.protocol}"
