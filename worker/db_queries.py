@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 SUPPORTED_CONNECTIVITY_PROTOCOLS= [
     "vless",
     "vmess",
-    "ss"
+    "ss",
+    "trojan",
 ]
 
 def get_next_config():
