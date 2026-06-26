@@ -7,6 +7,8 @@ from urllib.parse import urlsplit, parse_qs
 from database.db import SessionLocal
 from database.models import Config
 from worker.config_sanitizer import sanitize_config_for_delivery
+from worker.parsers.factory import parse_config
+
 
 
 EXPORT_PATH = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
@@ -127,31 +129,88 @@ def get_first_param(params, key, default=""):
 
 def extract_fingerprint(config_text):
     """
-    Fingerprint قوی برای جلوگیری از اینکه ۵ کانفیگ هم‌خانواده وارد Hot شوند.
+    Fingerprint و metadata خروجی public.
 
-    نکته:
-    عمداً server/ip را داخل strong_family نمی‌گذاریم.
-    چون اگر uuid + port + transport + mode یکسان باشد،
-    معمولاً این‌ها یک خانواده سرویس هستند حتی اگر IP فرق کند.
+    برای VLESS و VMess نباید فقط urlsplit استفاده کنیم.
+    VMess به شکل vmess://base64-json است و urlsplit آن را اشتباه
+    به‌عنوان host می‌خواند. بنابراین از parser اصلی پروژه استفاده می‌کنیم.
     """
     try:
-        parsed = urlsplit(config_text)
-        params = parse_qs(parsed.query)
+        parsed_config = parse_config(config_text)
 
-        protocol = (parsed.scheme or "").lower()
-        uuid = (parsed.username or "").lower()
-        host = (parsed.hostname or "").lower()
-        port = str(parsed.port or "")
+        protocol = (parsed_config.protocol or "").lower()
+        server = (parsed_config.server or "").strip().lower()
+        port = str(parsed_config.port or "")
 
-        network_type = get_first_param(params, "type", "").lower()
-        mode = get_first_param(params, "mode", "").lower()
-        security = get_first_param(params, "security", "none").lower()
-        encryption = get_first_param(params, "encryption", "").lower()
+        network_type = (
+            parsed_config.transport.get("type", "")
+            if parsed_config.transport
+            else ""
+        )
+        network_type = (network_type or "").lower()
 
-        sni = get_first_param(params, "sni", "").lower()
-        host_header = get_first_param(params, "host", "").lower()
-        service_name = get_first_param(params, "serviceName", "").lower()
-        path = get_first_param(params, "path", "").lower()
+        mode = (
+            parsed_config.transport.get("mode", "")
+            if parsed_config.transport
+            else ""
+        )
+        mode = (mode or "").lower()
+
+        security = (
+            parsed_config.tls.get("security", "none")
+            if parsed_config.tls
+            else "none"
+        )
+        security = (security or "none").lower()
+
+        uuid = (
+            parsed_config.auth.get("uuid", "")
+            if parsed_config.auth
+            else ""
+        )
+        uuid = (uuid or "").lower()
+
+        encryption = (
+            parsed_config.auth.get("encryption", "")
+            if parsed_config.auth
+            else ""
+        )
+        encryption = (encryption or "").lower()
+
+        sni = (
+            parsed_config.tls.get("sni", "")
+            if parsed_config.tls
+            else ""
+        )
+        sni = (sni or "").lower()
+
+        host_header = (
+            parsed_config.transport.get("host", "")
+            if parsed_config.transport
+            else ""
+        )
+        host_header = (host_header or "").lower()
+
+        service_name = (
+            parsed_config.transport.get("service_name", "")
+            if parsed_config.transport
+            else ""
+        )
+        service_name = (service_name or "").lower()
+
+        path = (
+            parsed_config.transport.get("path", "")
+            if parsed_config.transport
+            else ""
+        )
+        path = (path or "").lower()
+
+        # metadata خراب نباید وارد public شود
+        if not protocol or not server or not port:
+            raise ValueError(
+                f"Invalid parsed config metadata: "
+                f"protocol={protocol}, server={server}, port={port}"
+            )
 
         strong_family = "|".join(
             [
@@ -169,11 +228,11 @@ def extract_fingerprint(config_text):
             ]
         )
 
-        host_family = normalize_host_family(host)
+        host_family = normalize_host_family(server)
 
         return {
             "protocol": protocol,
-            "server": host,
+            "server": server,
             "port": port,
             "network_type": network_type,
             "security": security,
@@ -255,6 +314,14 @@ def load_candidates(session):
             continue
 
         fp = extract_fingerprint(sanitized_text)
+        if (
+            fp["protocol"] == "unknown"
+            or fp["server"] in ("", "unknown")
+            or not fp["port"]
+            or not fp["network_type"]
+        ):
+            skipped += 1
+            continue
         delivery_score = calculate_delivery_score(row)
 
         candidates.append(

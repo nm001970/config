@@ -1,6 +1,6 @@
 import time
 from multiprocessing import Process
-from worker.db_queries import claim_vless_batch
+from worker.db_queries import claim_supported_connectivity_batch
 from worker.test_worker import test_config
 
 def run_one_work(config_id):
@@ -16,7 +16,7 @@ def run_connectivity_scan(workers=5, rounds=1):
         print(f"CONNECTIVITY ROUND {round_number}")
         print("="*40)
 
-        ids = claim_vless_batch(workers)
+        ids = claim_supported_connectivity_batch(workers)
 
         print("CLAIMED", ids)
 

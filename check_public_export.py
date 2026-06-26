@@ -1,7 +1,7 @@
 import json
 import os
 from collections import Counter
-from urllib.parse import urlsplit, parse_qs
+# from urllib.parse import urlsplit, parse_qs
 
 
 PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
@@ -47,36 +47,61 @@ def get_config_text(item):
     return ""
 
 
-def extract_family(config_text):
+def require_public_metadata(item, name, index):
+    protocol = str(item.get("protocol") or "").strip().lower()
+    server = str(item.get("server") or "").strip()
+    port = str(item.get("port") or "").strip()
+    network_type = str(item.get("network_type") or "").strip().lower()
+    security = str(item.get("security") or "none").strip().lower()
+
+    if protocol not in ("vless", "vmess", "ss", "trojan"):
+        fail(f"{name}[{index}] has invalid protocol metadata: {protocol}")
+
+    if not server or server == "unknown":
+        fail(f"{name}[{index}] has invalid server metadata")
+
+    if server.startswith(("vless://", "vmess://", "ss://", "trojan://")):
+        fail(f"{name}[{index}] server metadata looks like config text")
+
+    # VMess base64 payload اشتباهاً به‌عنوان server نباید قبول شود.
+    if protocol == "vmess" and len(server) > 120:
+        fail(f"{name}[{index}] vmess server metadata looks invalid: {server[:80]}")
+
+    if not port:
+        fail(f"{name}[{index}] has empty port metadata")
+
     try:
-        parsed = urlsplit(config_text)
-        params = parse_qs(parsed.query)
-
-        protocol = parsed.scheme.lower()
-        uuid = (parsed.username or "").lower()
-        host = (parsed.hostname or "").lower()
-        port = str(parsed.port or "")
-
-        network_type = (params.get("type", [""])[0] or "").lower()
-        mode = (params.get("mode", [""])[0] or "").lower()
-        security = (params.get("security", ["none"])[0] or "none").lower()
-        sni = (params.get("sni", [""])[0] or "").lower()
-        host_header = (params.get("host", [""])[0] or "").lower()
-
-        return "|".join([
-            protocol,
-            uuid,
-            port,
-            network_type,
-            mode,
-            security,
-            sni,
-            host_header,
-            host,
-        ])
-
+        port_number = int(port)
+        if port_number <= 0 or port_number > 65535:
+            fail(f"{name}[{index}] has invalid port metadata: {port}")
     except Exception:
-        return "unknown"
+        fail(f"{name}[{index}] has non-numeric port metadata: {port}")
+
+    if not network_type:
+        fail(f"{name}[{index}] has empty network_type metadata")
+
+    if not security:
+        fail(f"{name}[{index}] has empty security metadata")
+
+    return {
+        "protocol": protocol,
+        "server": server.lower(),
+        "port": port,
+        "network_type": network_type,
+        "security": security,
+    }
+
+
+def extract_family(item):
+    meta = require_public_metadata(item, "family", item.get("source_id", "?"))
+
+    return "|".join([
+        meta["protocol"],
+        meta["server"],
+        meta["port"],
+        meta["network_type"],
+        meta["security"],
+    ])
 
 
 def check_configs(name, items, min_count=1):
@@ -90,6 +115,8 @@ def check_configs(name, items, min_count=1):
 
     for index, item in enumerate(items, start=1):
         config_text = get_config_text(item)
+
+        require_public_metadata(item, name, index)
 
         if not config_text:
             fail(f"{name}[{index}] has empty config_text")
@@ -115,7 +142,6 @@ def check_configs(name, items, min_count=1):
     ok(f"{name} basic checks passed: {len(texts)} items")
 
     return texts
-
 
 def main():
     payload = load_payload()
@@ -153,7 +179,7 @@ def main():
     else:
         warn("reserve is empty")
 
-    families = [extract_family(text) for text in hot_texts]
+    families = [extract_family(item) for item in hot]
     family_counts = Counter(families)
 
     repeated_families = [
@@ -170,14 +196,12 @@ def main():
         ok("hot family diversity looks good")
 
     print("\nHOT PREVIEW:")
-    for index, text in enumerate(hot_texts, start=1):
-        parsed = urlsplit(text)
-        params = parse_qs(parsed.query)
+    for index, item in enumerate(hot, start=1):
         print(
             f"{index}) "
-            f"{parsed.hostname}:{parsed.port} "
-            f"type={params.get('type', [''])[0]} "
-            f"security={params.get('security', ['none'])[0]}"
+            f"{item.get('server')}:{item.get('port')} "
+            f"type={item.get('network_type')} "
+            f"security={item.get('security')}"
         )
 
     print("\nRESULT: PUBLIC EXPORT IS VALID")

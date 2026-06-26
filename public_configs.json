@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T00:33:51.272848Z",
+  "generated_at": "2026-06-26T01:47:06.332186Z",
   "version": 2,
   "strategy": "hot_reserve_diverse_delivery_score",
   "hot_count": 5,
@@ -36,6 +36,21 @@
       "security": "none"
     },
     {
+      "config_text": "vmess://eyJhZGQiOiAiNjUuMTA5LjIxOC42MCIsICJpZCI6ICI2NTQ4OGJjZi04NTczLTQ0ZWUtOWI0Zi05YWJmNDM5MGFjY2EiLCAibmV0IjogInRjcCIsICJwb3J0IjogODA4OCwgInNjeSI6ICJhdXRvIiwgInRscyI6ICJub25lIiwgInR5cGUiOiAibm9uZSIsICJ2IjogIjIiLCAicHMiOiAiXHVkODNkXHVkZDI1Sm9pbitUZWxlZ3JhbTpARmFyYWhfVlBOXHVkODNkXHVkZmUzIn0=#@mnproxyBot",
+      "source_id": 15923,
+      "protocol": "vmess",
+      "quality_score": 65.5,
+      "delivery_score": 75.01,
+      "latency": 1119.78,
+      "ping_avg_ms": 548.3,
+      "download_mbps": 5.49,
+      "upload_mbps": 0.51,
+      "server": "65.109.218.60",
+      "port": "8088",
+      "network_type": "tcp",
+      "security": "none"
+    },
+    {
       "config_text": "vless://8ca5cbd3-ec16-4728-bedc-2bc0d82f0922@217.217.247.253:443?encryption=none&type=tcp&security=reality&headerType=none&sni=enterprisekitten.com&fp=chrome&insecure=1&allowInsecure=1&pbk=SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc&sid=6ba85179e30d4fc2&flow=xtls-rprx-vision#@mnproxyBot",
       "source_id": 13853,
       "protocol": "vless",
@@ -64,21 +79,6 @@
       "port": "80",
       "network_type": "ws",
       "security": "none"
-    },
-    {
-      "config_text": "vless://1448874c-bcc5-44cb-951b-9cb8ce70c692@46.4.162.63:443?security=none&type=tcp#@mnproxyBot",
-      "source_id": 15575,
-      "protocol": "vless",
-      "quality_score": 54.5,
-      "delivery_score": 65.53,
-      "latency": 808.15,
-      "ping_avg_ms": 563.7,
-      "download_mbps": 2.36,
-      "upload_mbps": 0.77,
-      "server": "46.4.162.63",
-      "port": "443",
-      "network_type": "tcp",
-      "security": "none"
     }
   ],
   "reserve": [
@@ -95,6 +95,21 @@
       "server": "sca30.mysilipdir.com",
       "port": "8880",
       "network_type": "grpc",
+      "security": "none"
+    },
+    {
+      "config_text": "vmess://eyJhZGQiOiAiNjUuMTA5LjIxOC42MCIsICJpZCI6ICI2NTQ4OGJjZi04NTczLTQ0ZWUtOWI0Zi05YWJmNDM5MGFjY2EiLCAibmV0IjogInRjcCIsICJwb3J0IjogODA4OCwgInBzIjogIlx1ZDgzZFx1ZGQyNUpvaW4rVGVsZWdyYW06QEZhcmFoX1ZQTlx1ZDgzZFx1ZGZlMyIsICJzY3kiOiAiYXV0byIsICJ0bHMiOiAibm9uZSIsICJ0eXBlIjogIm5vbmUiLCAidiI6ICIyIn0=#@mnproxyBot",
+      "source_id": 15969,
+      "protocol": "vmess",
+      "quality_score": 57.5,
+      "delivery_score": 73.12,
+      "latency": 616.53,
+      "ping_avg_ms": 585.44,
+      "download_mbps": 2.96,
+      "upload_mbps": 0.9,
+      "server": "65.109.218.60",
+      "port": "8088",
+      "network_type": "tcp",
       "security": "none"
     },
     {
@@ -125,6 +140,21 @@
       "server": "151.101.58.151",
       "port": "80",
       "network_type": "ws",
+      "security": "none"
+    },
+    {
+      "config_text": "vless://1448874c-bcc5-44cb-951b-9cb8ce70c692@46.4.162.63:443?security=none&type=tcp#@mnproxyBot",
+      "source_id": 15575,
+      "protocol": "vless",
+      "quality_score": 54.5,
+      "delivery_score": 65.53,
+      "latency": 808.15,
+      "ping_avg_ms": 563.7,
+      "download_mbps": 2.36,
+      "upload_mbps": 0.77,
+      "server": "46.4.162.63",
+      "port": "443",
+      "network_type": "tcp",
       "security": "none"
     },
     {
@@ -318,6 +348,21 @@
       "download_mbps": 5.6,
       "upload_mbps": 0.0,
       "server": "auth.vercel.com",
+      "port": "80",
+      "network_type": "ws",
+      "security": "none"
+    },
+    {
+      "config_text": "vmess://eyJ2IjogIjIiLCAicHMiOiAiXHVkODNkXHVkZDI1Sm9pbitUZWxlZ3JhbTpARmFyYWhfVlBOXHVkODNkXHVkZmUzIiwgImFkZCI6ICI2OS44NC4xODIuNDkiLCAicG9ydCI6ICI4MCIsICJpZCI6ICJmODk3NTg3MS1hN2EwLTQ5MDYtODgzNS1hMjNjMTI1OGNhMWUiLCAiYWlkIjogIjAiLCAic2N5IjogImF1dG8iLCAibmV0IjogIndzIiwgInR5cGUiOiAibm9uZSIsICJob3N0IjogImdvb2dsZS53aGF0c2FwcC5zbmFwcC50b3JvYi5iYXNhbGFtLnp1bGEudXBsYW9kLW11c2ljLmlyLiIsICJwYXRoIjogIi8iLCAidGxzIjogIm5vbmUiLCAic25pIjogIiIsICJ0ZXN0X25hbWUiOiAiMzAifQ==#@mnproxyBot",
+      "source_id": 15889,
+      "protocol": "vmess",
+      "quality_score": 49.5,
+      "delivery_score": 62.61,
+      "latency": 871.26,
+      "ping_avg_ms": 775.91,
+      "download_mbps": 3.22,
+      "upload_mbps": 0.89,
+      "server": "69.84.182.49",
       "port": "80",
       "network_type": "ws",
       "security": "none"
@@ -636,51 +681,6 @@
       "port": "443",
       "network_type": "tcp",
       "security": "reality"
-    },
-    {
-      "config_text": "vless://0058c215-ab1e-400c-a403-b5b2fda7e846@151.101.38.151:80?path=%2F&security=&encryption=none&host=max-gb1.global.ssl.fastly.net&type=ws#@mnproxyBot",
-      "source_id": 13810,
-      "protocol": "vless",
-      "quality_score": 46.5,
-      "delivery_score": 57.24,
-      "latency": 951.46,
-      "ping_avg_ms": 932.27,
-      "download_mbps": 3.56,
-      "upload_mbps": 0.54,
-      "server": "151.101.38.151",
-      "port": "80",
-      "network_type": "ws",
-      "security": "none"
-    },
-    {
-      "config_text": "vless://c430370a-4b00-4686-bfb9-36ef1b989dcd@18.185.25.147:443?security=none&encryption=none&headerType=none&type=tcp#@mnproxyBot",
-      "source_id": 3215,
-      "protocol": "vless",
-      "quality_score": 47.5,
-      "delivery_score": 57.18,
-      "latency": 534.75,
-      "ping_avg_ms": 833.84,
-      "download_mbps": 4.84,
-      "upload_mbps": 0.0,
-      "server": "18.185.25.147",
-      "port": "443",
-      "network_type": "tcp",
-      "security": "none"
-    },
-    {
-      "config_text": "vless://7896c501-248f-4068-bc2f-363c91ba5122@45.198.87.86:8443?security=reality&encryption=none&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=storage.yandex.net&sid=2715592069f36fe7#@mnproxyBot",
-      "source_id": 6670,
-      "protocol": "vless",
-      "quality_score": 52.5,
-      "delivery_score": 56.74,
-      "latency": 4156.69,
-      "ping_avg_ms": 689.85,
-      "download_mbps": 2.51,
-      "upload_mbps": 0.74,
-      "server": "45.198.87.86",
-      "port": "8443",
-      "network_type": "tcp",
-      "security": "reality"
     }
   ],
   "configs": [
@@ -715,6 +715,21 @@
       "security": "none"
     },
     {
+      "config_text": "vmess://eyJhZGQiOiAiNjUuMTA5LjIxOC42MCIsICJpZCI6ICI2NTQ4OGJjZi04NTczLTQ0ZWUtOWI0Zi05YWJmNDM5MGFjY2EiLCAibmV0IjogInRjcCIsICJwb3J0IjogODA4OCwgInNjeSI6ICJhdXRvIiwgInRscyI6ICJub25lIiwgInR5cGUiOiAibm9uZSIsICJ2IjogIjIiLCAicHMiOiAiXHVkODNkXHVkZDI1Sm9pbitUZWxlZ3JhbTpARmFyYWhfVlBOXHVkODNkXHVkZmUzIn0=#@mnproxyBot",
+      "source_id": 15923,
+      "protocol": "vmess",
+      "quality_score": 65.5,
+      "delivery_score": 75.01,
+      "latency": 1119.78,
+      "ping_avg_ms": 548.3,
+      "download_mbps": 5.49,
+      "upload_mbps": 0.51,
+      "server": "65.109.218.60",
+      "port": "8088",
+      "network_type": "tcp",
+      "security": "none"
+    },
+    {
       "config_text": "vless://8ca5cbd3-ec16-4728-bedc-2bc0d82f0922@217.217.247.253:443?encryption=none&type=tcp&security=reality&headerType=none&sni=enterprisekitten.com&fp=chrome&insecure=1&allowInsecure=1&pbk=SbVKOEMjK0sIlbwg4akyBg5mL5KZwwB-ed4eEE7YnRc&sid=6ba85179e30d4fc2&flow=xtls-rprx-vision#@mnproxyBot",
       "source_id": 13853,
       "protocol": "vless",
@@ -742,21 +757,6 @@
       "server": "151.101.192.151",
       "port": "80",
       "network_type": "ws",
-      "security": "none"
-    },
-    {
-      "config_text": "vless://1448874c-bcc5-44cb-951b-9cb8ce70c692@46.4.162.63:443?security=none&type=tcp#@mnproxyBot",
-      "source_id": 15575,
-      "protocol": "vless",
-      "quality_score": 54.5,
-      "delivery_score": 65.53,
-      "latency": 808.15,
-      "ping_avg_ms": 563.7,
-      "download_mbps": 2.36,
-      "upload_mbps": 0.77,
-      "server": "46.4.162.63",
-      "port": "443",
-      "network_type": "tcp",
       "security": "none"
     }
   ]

@@ -2,6 +2,11 @@ from database.db import SessionLocal
 from database.models import Config
 from datetime import datetime, timedelta
 
+SUPPORTED_CONNECTIVITY_PROTOCOLS= [
+    "vless",
+    "vmess"
+]
+
 def get_next_config():
     session= SessionLocal()
     rows= (
@@ -146,7 +151,7 @@ def reset_stuck_configs():
     return count, q_count
 
 
-def claim_vless_batch(limit=None):
+def claim_supported_connectivity_batch(limit=None):
 
     session = SessionLocal()
 
@@ -154,21 +159,25 @@ def claim_vless_batch(limit=None):
         session.query(Config)
         .filter(
             Config.status == "new",
-            Config.protocol == "vless"
+            Config.protocol.in_(SUPPORTED_CONNECTIVITY_PROTOCOLS)
         )
         .order_by(Config.id.desc())
         .limit(limit)
         .all()
     )
-    for row in rows:
 
+    for row in rows:
         row.status = "testing"
-        row.last_checked= datetime.utcnow()
+        row.last_checked = datetime.utcnow()
 
     session.commit()
-    ids= [row.id for row in rows]
+
+    ids = [row.id for row in rows]
 
     session.close()
 
     return ids
 
+
+def claim_vless_batch(limit=None):
+    return claim_supported_connectivity_batch(limit)
