@@ -1,13 +1,70 @@
 import argparse
+import os
 from datetime import datetime, timedelta
 
-from database.user_db import UserSessionLocal
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from database.models import BotUser
+
+
+def normalize_database_url(url: str):
+    if url and url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
+
+
+def get_database_url(db_name: str):
+    if db_name == "production":
+        url = (
+            os.getenv("PRODUCTION_USER_DATABASE_URL")
+            or os.getenv("USER_DATABASE_URL")
+        )
+
+        if not url:
+            raise RuntimeError(
+                "Production DB URL not found. Set PRODUCTION_USER_DATABASE_URL "
+                "or USER_DATABASE_URL."
+            )
+
+        return normalize_database_url(url)
+
+    if db_name == "local":
+        return os.getenv(
+            "LOCAL_USER_DATABASE_URL",
+            "sqlite:///users.db"
+        )
+
+    raise ValueError(f"Unknown database target: {db_name}")
+
+
+def make_session(db_name: str):
+    database_url = get_database_url(db_name)
+
+    engine = create_engine(
+        database_url,
+        echo=False,
+    )
+
+    Session = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine,
+    )
+
+    return Session(), database_url
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Manually extend or set a bot user's subscription."
+    )
+
+    parser.add_argument(
+        "--db",
+        choices=["production", "local"],
+        required=True,
+        help="Target user database"
     )
 
     lookup = parser.add_mutually_exclusive_group(required=True)
@@ -59,7 +116,7 @@ def find_user(session, args):
     if args.telegram_id is not None:
         return (
             query
-            .filter(BotUser.telegram_id == args.telegram_id)
+            .filter(BotUser.telegram_id == str(args.telegram_id))
             .one_or_none()
         )
 
@@ -92,7 +149,18 @@ def find_user(session, args):
 def format_dt(value):
     if not value:
         return "None"
+
     return value.strftime("%Y-%m-%d %H:%M:%S UTC")
+
+
+def mask_url(url: str):
+    if not url:
+        return "None"
+
+    if "@" in url:
+        return "***@" + url.rsplit("@", 1)[1]
+
+    return url
 
 
 def main():
@@ -104,7 +172,7 @@ def main():
     if args.set_days is not None and args.set_days <= 0:
         raise ValueError("--set-days must be greater than 0")
 
-    session = UserSessionLocal()
+    session, database_url = make_session(args.db)
 
     try:
         user = find_user(session, args)
@@ -114,8 +182,8 @@ def main():
 
         now = datetime.utcnow()
 
-        old_end = user.subscription_end
         old_start = user.subscription_start
+        old_end = user.subscription_end
 
         if not user.subscription_start:
             user.subscription_start = now
@@ -134,18 +202,28 @@ def main():
 
         user.subscription_end = new_end
 
-        print("=" * 60)
+        print("=" * 70)
         print("MANUAL SUBSCRIPTION UPDATE")
-        print("=" * 60)
-        print(f"Mode:              {mode}")
-        print(f"Telegram ID:       {user.telegram_id}")
-        print(f"Username:          @{user.username}" if user.username else "Username:          None")
-        print(f"Subscription token:{user.subscription_token}")
-        print(f"Old start:         {format_dt(old_start)}")
-        print(f"Old end:           {format_dt(old_end)}")
-        print(f"New start:         {format_dt(user.subscription_start)}")
-        print(f"New end:           {format_dt(user.subscription_end)}")
-        print(f"Dry run:           {args.dry_run}")
+        print("=" * 70)
+        print(f"DB target:          {args.db}")
+        print(f"DB URL:             {mask_url(database_url)}")
+        print(f"Mode:               {mode}")
+        print(f"Telegram ID:        {user.telegram_id}")
+        print(f"Chat ID:            {getattr(user, 'chat_id', None)}")
+        print(
+            f"Username:           @{user.username}"
+            if user.username
+            else "Username:           None"
+        )
+        print(f"First name:         {getattr(user, 'first_name', None)}")
+        print(f"Last name:          {getattr(user, 'last_name', None)}")
+        print(f"Language code:      {getattr(user, 'language_code', None)}")
+        print(f"Subscription token: {user.subscription_token}")
+        print(f"Old start:          {format_dt(old_start)}")
+        print(f"Old end:            {format_dt(old_end)}")
+        print(f"New start:          {format_dt(user.subscription_start)}")
+        print(f"New end:            {format_dt(user.subscription_end)}")
+        print(f"Dry run:            {args.dry_run}")
 
         if args.dry_run:
             session.rollback()
