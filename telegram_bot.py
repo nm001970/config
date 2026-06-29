@@ -45,14 +45,35 @@ def build_subscription_url(user):
         f"{user['subscription_token']}"
     )
 
+def get_or_create_user_from_message(message: Message):
+    from_user = message.from_user
+
+    return get_or_create_user(
+        telegram_id=from_user.id,
+        chat_id=message.chat.id,
+        username=from_user.username,
+        first_name=from_user.first_name,
+        last_name=from_user.last_name,
+        language_code=from_user.language_code,
+    )
+
+
+def get_or_create_user_from_callback(callback: CallbackQuery):
+    from_user = callback.from_user
+
+    return get_or_create_user(
+        telegram_id=from_user.id,
+        chat_id=callback.message.chat.id,
+        username=from_user.username,
+        first_name=from_user.first_name,
+        last_name=from_user.last_name,
+        language_code=from_user.language_code,
+    )
+
 
 @dp.message(CommandStart())
 async def start_handler(message: Message):
-    user = get_or_create_user(
-        telegram_id=message.from_user.id,
-        username=message.from_user.username,
-        first_name=message.from_user.first_name
-    )
+    user = get_or_create_user_from_message(message)
 
     if user["creat_at"]:
         text = (
@@ -89,11 +110,7 @@ async def menu_home_callback(callback: CallbackQuery):
 
 @dp.message(Command("sub"))
 async def subscription_handler(message: Message):
-    user = get_or_create_user(
-        telegram_id=message.from_user.id,
-        username=message.from_user.username,
-        first_name=message.from_user.first_name
-    )
+    user = get_or_create_user_from_message(message)
 
     if not user["is_active"]:
         await message.answer(
@@ -120,11 +137,7 @@ async def subscription_handler(message: Message):
 async def subscription_callback(callback: CallbackQuery):
     await callback.answer()
 
-    user = get_or_create_user(
-        telegram_id=callback.from_user.id,
-        username=callback.from_user.username,
-        first_name=callback.from_user.first_name
-    )
+    user = get_or_create_user_from_callback(callback)
 
     if not user["is_active"]:
         await callback.message.edit_text(
@@ -149,11 +162,7 @@ async def subscription_callback(callback: CallbackQuery):
 
 @dp.message(Command("status"))
 async def status_handler(message: Message):
-    user = get_or_create_user(
-        telegram_id=message.from_user.id,
-        username=message.from_user.username,
-        first_name=message.from_user.first_name
-    )
+    user = get_or_create_user_from_message(message)
 
     if user["is_active"]:
         subscription_end = format_jalali_datetime(user['subscription_end'])
@@ -180,11 +189,7 @@ async def status_handler(message: Message):
 async def status_callback(callback: CallbackQuery):
     await callback.answer()
 
-    user = get_or_create_user(
-        telegram_id=callback.from_user.id,
-        username=callback.from_user.username,
-        first_name=callback.from_user.first_name
-    )
+    user = get_or_create_user_from_callback(callback)
 
     if user["is_active"]:
         subscription_end = format_jalali_datetime(user['subscription_end'])

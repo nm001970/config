@@ -29,11 +29,15 @@ def user_to_dict(user):
     return {
         "id": user.id,
         "telegram_id": user.telegram_id,
+        "chat_id": getattr(user, "chat_id", None),
         "username": user.username,
         "first_name": user.first_name,
+        "last_name": getattr(user, "last_name", None),
+        "language_code": getattr(user, "language_code", None),
         "subscription_token": user.subscription_token,
         "subscription_start": user.subscription_start,
         "subscription_end": user.subscription_end,
+        "last_seen_at": getattr(user, "last_seen_at", None),
         "creat_at": user.creat_at,
         "is_active": is_subscription_active(user),
     }
@@ -87,11 +91,49 @@ def create_unique_subscription_token(session):
     raise RuntimeError("Could not generate unique subscription token")
 
 
-def get_or_create_user(telegram_id, username=None, first_name=None):
+def update_user_profile(
+    user,
+    telegram_id,
+    chat_id=None,
+    username=None,
+    first_name=None,
+    last_name=None,
+    language_code=None,
+    now=None,
+):
+    now = now or datetime.utcnow()
+
+    user.telegram_id = str(telegram_id)
+
+    if hasattr(user, "chat_id"):
+        user.chat_id = str(chat_id) if chat_id is not None else str(telegram_id)
+
+    user.username = username
+    user.first_name = first_name
+
+    if hasattr(user, "last_name"):
+        user.last_name = last_name
+
+    if hasattr(user, "language_code"):
+        user.language_code = language_code
+
+    if hasattr(user, "last_seen_at"):
+        user.last_seen_at = now
+
+
+def get_or_create_user(
+    telegram_id,
+    chat_id=None,
+    username=None,
+    first_name=None,
+    last_name=None,
+    language_code=None,
+):
     session = UserSessionLocal()
 
     try:
         telegram_id = str(telegram_id)
+        chat_id = str(chat_id) if chat_id is not None else telegram_id
 
         user = (
             session.query(BotUser)
@@ -102,8 +144,16 @@ def get_or_create_user(telegram_id, username=None, first_name=None):
         now = datetime.utcnow()
 
         if user:
-            user.username = username
-            user.first_name = first_name
+            update_user_profile(
+                user=user,
+                telegram_id=telegram_id,
+                chat_id=chat_id,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                language_code=language_code,
+                now=now,
+            )
 
             if not user.subscription_token:
                 user.subscription_token = create_unique_subscription_token(session)
@@ -127,6 +177,17 @@ def get_or_create_user(telegram_id, username=None, first_name=None):
             subscription_start=now,
             subscription_end=now + timedelta(days=FREE_DAYS),
             creat_at=now,
+        )
+
+        update_user_profile(
+            user=user,
+            telegram_id=telegram_id,
+            chat_id=chat_id,
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            language_code=language_code,
+            now=now,
         )
 
         session.add(user)
