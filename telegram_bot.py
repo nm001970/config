@@ -11,12 +11,17 @@ from aiogram.types import Message, CallbackQuery, BotCommand
 from telegram_keyboards import (
     main_menu_keyboard,
     back_to_menu_keyboard,
-    subscription_keyboard
+    subscription_keyboard,
+    operator_selection_keyboard
 )
 
 from database.repositories.bot_user_repository import (
     get_or_create_user,
     is_subscription_active
+)
+
+from database.repositories.public_config_repository import(
+    get_public_configs_for_subscription
 )
 
 from utils.date_utils import format_jalali_datetime
@@ -39,11 +44,26 @@ LRM= "\u200e"
 def ltr(text):
     return LRM + text
 
-def build_subscription_url(user):
+def build_subscription_url(user, operator="default"):
     return (
         f"{PUBLIC_BASE_URL}/sub/"
         f"{user['subscription_token']}"
+        f"?operator={operator}"
     )
+
+def get_operator_label(operator):
+    if operator == "mci":
+        return "همراه اول"
+
+    if operator == "default":
+        return "پیش‌فرض / ایرانسل"
+
+    return operator
+
+
+def ensure_active_user(user):
+    return bool(user and user.get("is_active"))
+
 
 def get_or_create_user_from_message(message: Message):
     from_user = message.from_user
@@ -112,24 +132,16 @@ async def menu_home_callback(callback: CallbackQuery):
 async def subscription_handler(message: Message):
     user = get_or_create_user_from_message(message)
 
-    if not user["is_active"]:
+    if not ensure_active_user(user):
         await message.answer(
-            "اشتراک شما فعال نیست.\n"
-            "فعلاً بخش پرداخت فعال نشده.",
+            "اشتراک شما فعال نیست.\n",
             reply_markup=main_menu_keyboard()
         )
         return
 
-    sub_url = build_subscription_url(user)
-    safe_sub_url = escape(sub_url)
-
     await message.answer(
-        "🔗 لینک اشتراک اختصاصی شما آماده است.\n\n"
-        f"<code>{safe_sub_url}</code>\n\n"
-        "برای کپی کردن لینک، روی دکمه «📋 کپی لینک اشتراک» بزنید.\n"
-        "سپس آن را در بخش Subscription برنامه V2RayN اضافه کنید.",
-        reply_markup=subscription_keyboard(sub_url),
-        parse_mode="HTML"
+        "برای دریافت لینک اشتراک، اپراتور موردنظر را انتخاب کنید:",
+        reply_markup=operator_selection_keyboard("sub")
     )
 
 
@@ -139,19 +151,42 @@ async def subscription_callback(callback: CallbackQuery):
 
     user = get_or_create_user_from_callback(callback)
 
-    if not user["is_active"]:
+    if not ensure_active_user(user):
         await callback.message.edit_text(
-            "اشتراک شما فعال نیست.\n"
-            "فعلاً بخش پرداخت فعال نشده.",
+            "اشتراک شما فعال نیست.\n",
             reply_markup=back_to_menu_keyboard()
         )
         return
 
-    sub_url = build_subscription_url(user)
+    await callback.message.edit_text(
+        "برای دریافت لینک اشتراک، اپراتور موردنظر را انتخاب کنید:",
+        reply_markup=operator_selection_keyboard("sub")
+    )
+
+@dp.callback_query(F.data.startswith("sub:operator:"))
+async def subscription_operator_callback(callback: CallbackQuery):
+    await callback.answer()
+
+    operator = callback.data.split(":")[-1]
+
+    user = get_or_create_user_from_callback(callback)
+
+    if not ensure_active_user(user):
+        await callback.message.edit_text(
+            "اشتراک شما فعال نیست.\n",
+            reply_markup=back_to_menu_keyboard()
+        )
+        return
+
+    sub_url = build_subscription_url(
+        user,
+        operator=operator
+    )
     safe_sub_url = escape(sub_url)
+    operator_label = get_operator_label(operator)
 
     await callback.message.edit_text(
-        "🔗 لینک اشتراک اختصاصی شما آماده است.\n\n"
+        f"🔗 لینک اشتراک {operator_label} آماده است.\n\n"
         f"<code>{safe_sub_url}</code>\n\n"
         "برای کپی کردن لینک، روی دکمه «📋 کپی لینک اشتراک» بزنید.\n"
         "سپس آن را در بخش Subscription برنامه V2RayN اضافه کنید.",
@@ -175,8 +210,7 @@ async def status_handler(message: Message):
     else:
         text = (
             "وضعیت اشتراک:\n\n"
-            "اشتراک شما تمام شده است.\n\n"
-            "فعلاً بخش پرداخت فعال نشده."
+            "اشتراک شما تمام شده است.\n\n",
         )
 
     await message.answer(
@@ -202,8 +236,7 @@ async def status_callback(callback: CallbackQuery):
     else:
         text = (
             "وضعیت اشتراک:\n\n"
-            "اشتراک شما تمام شده است.\n\n"
-            "فعلاً بخش پرداخت فعال نشده."
+            "اشتراک شما تمام شده است.\n\n",
         )
 
     await callback.message.edit_text(
@@ -214,24 +247,94 @@ async def status_callback(callback: CallbackQuery):
 
 @dp.message(Command("configs"))
 async def configs_handler(message: Message):
-    active = is_subscription_active(message.from_user.id)
+    user = get_or_create_user_from_message(message)
 
-    if not active:
+    if not ensure_active_user(user):
         await message.answer(
-            "اشتراک شما فعال نیست.\n"
-            "فعلاً بخش پرداخت فعال نشده.",
+            "اشتراک شما فعال نیست.\n",
             reply_markup=main_menu_keyboard()
         )
         return
 
     await message.answer(
-        "کانفیگ‌ها دیگر مستقیم در چت ارسال نمی‌شوند.\n\n"
-        "برای دریافت لینک اشتراک V2RayN از دستور زیر استفاده کنید:\n"
-        "/sub\n\n"
-        "با لینک اشتراک، V2RayN با هر Update پنج کانفیگ برتر فعلی را دریافت می‌کند.",
-        reply_markup=main_menu_keyboard()
+        "برای دریافت کانفیگ دستی، اپراتور موردنظر را انتخاب کنید:\n\n"
+        "این گزینه برای زمانی است که برنامه نتواند لینک اشتراک را بدون فیلترشکن Update کند.",
+        reply_markup=operator_selection_keyboard("manual")
     )
 
+@dp.callback_query(F.data == "menu:manual")
+async def manual_configs_menu_callback(callback: CallbackQuery):
+    await callback.answer()
+
+    user = get_or_create_user_from_callback(callback)
+
+    if not ensure_active_user(user):
+        await callback.message.edit_text(
+            "اشتراک شما فعال نیست.\n",
+            reply_markup=back_to_menu_keyboard()
+        )
+        return
+
+    await callback.message.edit_text(
+        "برای دریافت کانفیگ دستی، اپراتور موردنظر را انتخاب کنید:\n\n"
+        "این گزینه برای زمانی است که برنامه نتواند لینک اشتراک را بدون فیلترشکن Update کند.",
+        reply_markup=operator_selection_keyboard("manual")
+    )
+
+
+@dp.callback_query(F.data.startswith("manual:operator:"))
+async def manual_configs_operator_callback(callback: CallbackQuery):
+    await callback.answer()
+
+    operator = callback.data.split(":")[-1]
+
+    user = get_or_create_user_from_callback(callback)
+
+    if not ensure_active_user(user):
+        await callback.message.edit_text(
+            "اشتراک شما فعال نیست.\n",
+            reply_markup=back_to_menu_keyboard()
+        )
+        return
+
+    operator_label = get_operator_label(operator)
+
+    try:
+        configs = get_public_configs_for_subscription(
+            operator=operator,
+            limit=10,
+        )
+    except ValueError:
+        await callback.message.edit_text(
+            "اپراتور انتخاب‌شده معتبر نیست.",
+            reply_markup=back_to_menu_keyboard()
+        )
+        return
+
+    if not configs:
+        await callback.message.edit_text(
+            "در حال حاضر کانفیگ سالمی برای این اپراتور موجود نیست.",
+            reply_markup=back_to_menu_keyboard()
+        )
+        return
+
+    await callback.message.edit_text(
+        f"🧩 کانفیگ‌های دستی {operator_label}\n\n"
+        "هر کانفیگ را جداگانه کپی و در V2RayN import کنید.\n"
+        "بعد از اتصال، بهتر است لینک اشتراک همان اپراتور را هم Update کنید.",
+        reply_markup=back_to_menu_keyboard()
+    )
+
+    total = len(configs)
+
+    for index, config_text in enumerate(configs, start=1):
+        safe_config = escape(config_text)
+
+        await callback.message.answer(
+            f"کانفیگ {index} از {total}:\n\n"
+            f"<code>{safe_config}</code>",
+            parse_mode="HTML"
+        )
 
 @dp.message(Command("privacy"))
 async def privacy_handler(message: Message):
@@ -265,17 +368,17 @@ async def privacy_callback(callback: CallbackQuery):
 async def help_handler(message: Message):
     await message.answer(
         "📘 راهنما:\n\n"
-        "۱. روی «دریافت لینک اشتراک» بزنید.\n"
-        "۲. لینک را در V2RayN اضافه کنید.\n"
-        "۳. هر بار Update بزنید، ۵ کانفیگ برتر فعلی دریافت می‌شود.\n\n"
+        "۱. برای دریافت لینک، روی «دریافت لینک اشتراک» بزنید.\n"
+        "۲. اپراتور موردنظر را انتخاب کنید.\n"
+        "۳. لینک را در V2RayN اضافه کنید.\n"
+        "۴. اگر بدون فیلترشکن نتوانستید لینک را Update کنید، از گزینه «دریافت کانفیگ دستی» استفاده کنید.\n\n"
         "دستورهای متنی:\n\n"
         "/start - نمایش منوی اصلی\n"
         "/sub - دریافت لینک اشتراک\n"
+        "/configs - دریافت کانفیگ دستی\n"
         "/status - وضعیت اشتراک\n"
         "/privacy - توضیح حریم خصوصی\n"
-        "/configs - راهنمای دریافت کانفیگ از طریق Subscription\n"
-        "/help - راهنما\n\n"
-        "کانفیگ‌ها مستقیم در چت ارسال نمی‌شوند.",
+        "/help - راهنما",
         reply_markup=main_menu_keyboard()
     )
 
@@ -285,17 +388,17 @@ async def help_callback(callback: CallbackQuery):
 
     await callback.message.edit_text(
         "📘 راهنما:\n\n"
-        "۱. روی «دریافت لینک اشتراک» بزنید.\n"
-        "۲. لینک را در V2RayN اضافه کنید.\n"
-        "۳. هر بار Update بزنید، ۵ کانفیگ برتر فعلی دریافت می‌شود.\n\n"
+        "۱. برای دریافت لینک، روی «دریافت لینک اشتراک» بزنید.\n"
+        "۲. اپراتور موردنظر را انتخاب کنید.\n"
+        "۳. لینک را در V2RayN اضافه کنید.\n"
+        "۴. اگر بدون فیلترشکن نتوانستید لینک را Update کنید، از گزینه «دریافت کانفیگ دستی» استفاده کنید.\n\n"
         "دستورهای متنی:\n\n"
         "/start - نمایش منوی اصلی\n"
         "/sub - دریافت لینک اشتراک\n"
+        "/configs - دریافت کانفیگ دستی\n"
         "/status - وضعیت اشتراک\n"
         "/privacy - توضیح حریم خصوصی\n"
-        "/configs - راهنمای دریافت کانفیگ از طریق Subscription\n"
-        "/help - راهنما\n\n"
-        "کانفیگ‌ها مستقیم در چت ارسال نمی‌شوند.",
+        "/help - راهنما",
         reply_markup=back_to_menu_keyboard()
     )
 
