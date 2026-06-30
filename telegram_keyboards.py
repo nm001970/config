@@ -19,6 +19,12 @@ def main_menu_keyboard():
         ],
         [
             InlineKeyboardButton(
+                text="🧩 دریافت کانفیگ دستی",
+                callback_data="menu:manual"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 text="📊 وضعیت اشتراک",
                 callback_data="menu:status"
             ),
@@ -63,13 +69,38 @@ def back_to_menu_keyboard():
     )
 
 
+def operator_selection_keyboard(mode):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="همراه اول",
+                    callback_data=f"{mode}:operator:mci"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="ایرانسل",
+                    callback_data=f"{mode}:operator:default"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="⬅️ بازگشت به منو",
+                    callback_data="menu:home"
+                )
+            ]
+        ]
+    )
+
+
 def subscription_keyboard(sub_url):
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="📋  کپی لینک اشتراک",
-                    copy_text= CopyTextButton(
+                    text="📋 کپی لینک اشتراک",
+                    copy_text=CopyTextButton(
                         text=sub_url
                     )
                 )
