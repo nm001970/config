@@ -53,8 +53,17 @@ def get_active_subscription_user(token: str):
     return user
 
 
-def get_subscription_raw_text(limit: int = SUBSCRIPTION_CONFIG_LIMIT):
-    lines = get_public_configs_for_subscription(limit=limit)
+def get_subscription_raw_text(
+        limit: int = SUBSCRIPTION_CONFIG_LIMIT,
+        operator: str | None = None):
+    try:
+        lines = get_public_configs_for_subscription(limit=limit, operator=operator)
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code= 400,
+            detail=str(exc)
+        )
 
     if not lines:
         raise HTTPException(
@@ -73,10 +82,13 @@ def root():
 
 
 @app.get("/sub/{token}")
-def get_subscription(token: str):
+def get_subscription(token: str, operator: str | None= None):
     get_active_subscription_user(token)
 
-    raw_text = get_subscription_raw_text(limit=SUBSCRIPTION_CONFIG_LIMIT)
+    raw_text = get_subscription_raw_text(
+        limit=SUBSCRIPTION_CONFIG_LIMIT,
+        operator=operator
+        )
 
     encoded = base64.b64encode(
         raw_text.encode("utf-8")
@@ -86,7 +98,7 @@ def get_subscription(token: str):
 
 
 @app.get("/sub-raw/{token}")
-def get_subscription_raw(token: str):
+def get_subscription_raw(token: str, operator: str | None= None):
     if not DEBUG_SUB_RAW:
         raise HTTPException(
             status_code=404,
@@ -94,6 +106,8 @@ def get_subscription_raw(token: str):
         )
 
     get_active_subscription_user(token)
-    raw_text = get_subscription_raw_text(limit=SUBSCRIPTION_CONFIG_LIMIT)
+    raw_text = get_subscription_raw_text(
+        limit=SUBSCRIPTION_CONFIG_LIMIT
+        ,operator=operator)
 
     return build_text_response(raw_text)
