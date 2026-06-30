@@ -2,9 +2,15 @@ import os
 import json
 
 
-PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
+DEFAULT_PUBLIC_CONFIGS_FILE = os.getenv(
+    "PUBLIC_CONFIGS_FILE",
+    "public_configs.json"
+)
 
-PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
+MCI_PUBLIC_CONFIGS_FILE = os.getenv(
+    "MCI_PUBLIC_CONFIGS_FILE",
+    "public_configs_mci.json"
+)
 
 SUBSCRIPTION_CONFIG_LIMIT = int(
     os.getenv("SUBSCRIPTION_CONFIG_LIMIT", "10")
@@ -18,11 +24,41 @@ RESERVE_DELIVERY_LIMIT = int(
     os.getenv("RESERVE_DELIVERY_LIMIT", "5")
 )
 
-def load_public_configs_payload():
-    if not os.path.exists(PUBLIC_CONFIGS_FILE):
+
+def normalize_operator(operator=None):
+    if operator is None:
+        return "default"
+
+    value = str(operator).strip().lower()
+
+    if value in ("", "none", "null"):
+        return "default"
+
+    return value
+
+
+def get_public_configs_file(operator=None):
+    operator = normalize_operator(operator)
+
+    if operator in ("default", "irancell", "unknown", "auto"):
+        return DEFAULT_PUBLIC_CONFIGS_FILE
+
+    if operator in ("mci", "hamrah", "hamrah_aval", "hamrah_avval"):
+        return MCI_PUBLIC_CONFIGS_FILE
+
+    raise ValueError(
+        f"Unsupported operator: {operator}"
+    )
+
+
+def load_public_configs_payload(operator= None):
+    
+    public_configs_file= get_public_configs_file(operator)
+
+    if not os.path.exists(public_configs_file):
         return {}
 
-    with open(PUBLIC_CONFIGS_FILE, "r", encoding="utf-8") as f:
+    with open(public_configs_file, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -70,8 +106,8 @@ def dedupe_configs(configs, limit):
     return unique
 
 
-def get_public_configs_for_subscription(limit=None):
-    payload = load_public_configs_payload()
+def get_public_configs_for_subscription(limit=None, operator=None):
+    payload = load_public_configs_payload(operator= operator)
 
     total_limit = int(limit or SUBSCRIPTION_CONFIG_LIMIT)
 
@@ -107,7 +143,7 @@ def get_public_configs_for_subscription(limit=None):
     )
 
 
-def get_public_reserve_configs(limit=45):
-    payload = load_public_configs_payload()
+def get_public_reserve_configs(limit=45, operator=None):
+    payload = load_public_configs_payload(operator= operator)
     reserve_items = payload.get("reserve")
     return extract_config_texts(reserve_items, limit=limit)

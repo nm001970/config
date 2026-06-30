@@ -1,8 +1,12 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.orm import sessionmaker
+import  os
 
-DATABASE_URL= "sqlite:///configs.db"
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+DATABASE_URL= os.getenv(
+    "CONFIG_DATABASE_URL",
+    "sqlite:///configs.db"
+)
 
 engine= create_engine(
     DATABASE_URL, 
