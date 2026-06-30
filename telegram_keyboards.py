@@ -38,7 +38,13 @@ def main_menu_keyboard():
                 text="📘 راهنما",
                 callback_data="menu:help"
             )
-        ]
+        ],
+        [
+            InlineKeyboardButton(
+                text="💳 تمدید اشتراک",
+                callback_data="menu:renew"
+            )
+        ],
     ]
 
     if CHANNEL_URL:

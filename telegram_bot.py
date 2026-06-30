@@ -56,7 +56,7 @@ def get_operator_label(operator):
         return "همراه اول"
 
     if operator == "default":
-        return "پیش‌فرض / ایرانسل"
+        return "ایرانسل"
 
     return operator
 
@@ -97,8 +97,8 @@ async def start_handler(message: Message):
 
     if user["creat_at"]:
         text = (
-            "🚀 به MN Proxy خوش آمدید.\n\n"
-            "اشتراک رایگان ۱۰ روزه شما فعال شد.\n\n"
+            "🚀 به M Proxy خوش آمدید.\n\n"
+            "اشتراک رایگان 3 روزه شما فعال شد.\n\n"
             "برای دریافت لینک اشتراک V2RayN، روی دکمه زیر بزنید.\n\n"
             "برای استفاده از این سرویس نیازی به ارسال شماره تلفن نیست."
         )
@@ -413,6 +413,34 @@ async def contact_handler(message: Message):
         "شماره تلفن شما ذخیره نمی‌شود.\n\n"
         "برای دریافت لینک اشتراک از منوی زیر استفاده کنید.",
         reply_markup=main_menu_keyboard()
+    )
+
+@dp.callback_query(F.data == "menu:renew")
+async def renew_subscription_callback(callback: CallbackQuery):
+    await callback.answer()
+
+    user = get_or_create_user_from_callback(callback)
+
+    telegram_id = user["telegram_id"]
+    username = user.get("username")
+
+    text = (
+        "💳 تمدید اشتراک\n\n"
+        "برای تمدید، شناسه تلگرام زیر را برای پشتیبانی ارسال کنید:\n\n"
+        f"<code>{telegram_id}</code>\n\n"
+    )
+
+    if username:
+        text += f"Username: @{escape(username)}\n\n"
+
+    text += (
+        "بعد از تمدید دوباره از منو لینک اشتراک یا کانفیگ دستی را دریافت کنید."
+    )
+
+    await callback.message.edit_text(
+        text,
+        reply_markup=back_to_menu_keyboard(),
+        parse_mode="HTML"
     )
 
 
