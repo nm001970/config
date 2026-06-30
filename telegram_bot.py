@@ -35,6 +35,10 @@ PUBLIC_BASE_URL = os.getenv(
     "http://127.0.0.1:8000"
 ).rstrip("/")
 
+FREE_TRIAL_DAYS =int(
+    os.getenv("FREE_TRIAL_DAYS", "3")
+)
+
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN is missing in .env")
 
@@ -98,7 +102,7 @@ async def start_handler(message: Message):
     if user["creat_at"]:
         text = (
             "🚀 به M Proxy خوش آمدید.\n\n"
-            "اشتراک رایگان 3 روزه شما فعال شد.\n\n"
+            f"اشتراک رایگان {FREE_TRIAL_DAYS} روزه شما فعال شد.\n\n"
             "برای دریافت لینک اشتراک V2RayN، روی دکمه زیر بزنید.\n\n"
             "برای استفاده از این سرویس نیازی به ارسال شماره تلفن نیست."
         )

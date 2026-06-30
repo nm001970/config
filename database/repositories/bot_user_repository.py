@@ -1,3 +1,4 @@
+import os
 import secrets
 from datetime import datetime, timedelta
 
@@ -5,7 +6,9 @@ from database.user_db import UserSessionLocal
 from database.models import BotUser
 
 
-FREE_DAYS = 10
+FREE_TRIAL_DAYS =int(
+    os.getenv("FREE_TRIAL_DAYS", "3")
+)
 
 
 def generate_token():
@@ -162,7 +165,7 @@ def get_or_create_user(
                 user.subscription_start = now
 
             if not user.subscription_end:
-                user.subscription_end = now + timedelta(days=FREE_DAYS)
+                user.subscription_end = now + timedelta(days=FREE_TRIAL_DAYS)
 
             session.commit()
             session.refresh(user)
@@ -175,7 +178,7 @@ def get_or_create_user(
             first_name=first_name,
             subscription_token=create_unique_subscription_token(session),
             subscription_start=now,
-            subscription_end=now + timedelta(days=FREE_DAYS),
+            subscription_end=now + timedelta(days=FREE_TRIAL_DAYS),
             creat_at=now,
         )
 
