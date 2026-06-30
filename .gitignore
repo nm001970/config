@@ -1,7 +1,7 @@
 .env
 .venv
 configs.db
-configs.db_*.db
+configs_*.db
 configs_before_*.db
 temp_config.json
 temp_configs/
