@@ -133,7 +133,7 @@ def main():
         ),
         (
             "Export public configs",
-            [python, "-u", "export_public_configs.py"],
+            [python, "-u", "safe_export_public_configs.py"],
         ),
         (
             "Check public export",
