@@ -79,13 +79,29 @@ Notes: Must not publish MCI from laptop.
 ## Smart Batch Testing
 
 ### smart_batch_plan.py
-Status: TEMPORARY
-Role: Preview-only prototype for smart batch selection.
-Decision: Replace with smart_batch_selector.py, then remove or deprecate this file.
+Status: REMOVED
+Role: Old preview-only prototype for smart batch selection.
+Decision: Replaced by smart_batch_selector.py.
 
 ### smart_batch_selector.py
-Status: PLANNED
-Role: Final selector for preview and smart_batch_ids.json generation.
+Status: ACTIVE
+Role: Repository-backed selector for smart connectivity batch preview and smart_batch_ids.json generation.
+Notes: Selection logic must stay in database/repositories/config_repository.py. This file should remain a CLI wrapper only.
+
+### database/repositories/config_repository.py
+Status: ACTIVE
+Role: Owns Config database query logic, including smart connectivity batch selection and claim helpers.
+Notes: New Config DB query logic should be added here, not inside worker modules.
+
+### worker/db_queries.py
+Status: ACTIVE_LEGACY
+Role: Legacy worker-side database query helpers.
+Notes: Do not add new selection/query logic here unless it is only for backward compatibility.
+
+### runners/connectivity_runner.py
+Status: ACTIVE
+Role: Runs connectivity tests for claimed batches and explicit config IDs.
+Notes: smartcycle must reuse run_connectivity_ids instead of creating another multiprocessing runner.
 
 ---
 
