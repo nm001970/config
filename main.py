@@ -111,7 +111,7 @@ def run_all():
     )
 
     run_quality_scan(
-        workers=3,
+        workers=5,
         rounds=5
     )
 
@@ -155,7 +155,7 @@ def run_connectivity_until_done(
 
 
 def run_quality_until_done(
-    workers=3,
+    workers=5,
     rounds_per_pass=20,
     max_passes=500
 ):
@@ -205,7 +205,7 @@ def fullcycle():
     )
 
     run_quality_until_done(
-        workers=3,
+        workers=5,
         rounds_per_pass=20,
         max_passes=500
     )

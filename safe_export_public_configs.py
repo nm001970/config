@@ -27,6 +27,10 @@ STATUS_PATH = TARGET_PATH.with_name(
     f"{TARGET_PATH.stem}.safe_export_status.json"
 )
 
+ALLOW_LAST_GOOD_FALLBACK_SUCCESS = (
+    os.getenv("SAFE_EXPORT_ALLOW_LAST_GOOD_SUCCESS", "false").lower() == "true"
+)
+
 
 def now_text():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -229,14 +233,45 @@ def main():
             except Exception:
                 pass
 
+        restored_from_last_good = False
+
         if LAST_GOOD_PATH.exists():
             try:
                 print("Restoring target from last_good after failure...")
                 shutil.copy2(LAST_GOOD_PATH, TARGET_PATH)
-                validate_public_export(TARGET_PATH)
+                restored_info = validate_public_export(TARGET_PATH)
+                restored_from_last_good = True
                 print("Target restored from last_good.")
+
+                write_status(
+                    "fallback_to_last_good",
+                    repr(exc),
+                    {
+                        "restored_from_last_good": True,
+                        "fallback_success_is_allowed": ALLOW_LAST_GOOD_FALLBACK_SUCCESS,
+                        "restored": restored_info,
+                    },
+                )
+
             except Exception as restore_exc:
                 print("WARNING: failed to restore last_good:", repr(restore_exc))
+                write_status(
+                    "failed",
+                    repr(exc),
+                    {
+                        "restored_from_last_good": False,
+                        "restore_error": repr(restore_exc),
+                    },
+                )
+
+        if restored_from_last_good and ALLOW_LAST_GOOD_FALLBACK_SUCCESS:
+            print()
+            print("=" * 70)
+            print("SAFE PUBLIC EXPORT FALLBACK SUCCESS")
+            print("Candidate export failed, but valid last_good was restored.")
+            print("Exiting with code 0 because SAFE_EXPORT_ALLOW_LAST_GOOD_SUCCESS=true")
+            print("=" * 70)
+            raise SystemExit(0)
 
         raise SystemExit(1)
 
