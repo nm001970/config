@@ -17,7 +17,7 @@ from runners.public_health_runner import (
 
 from database.repositories.maintenance_repository import (
     # reset_stuck_connectivity,
-    schedule_connectivity_retest,
+    schedule_quality_retest,
     reset_stuck_quality,
     archive_dead_configs
 )
@@ -55,7 +55,7 @@ def maintenance():
     print("MAINTENANCE...")
 
     # stuck_connectivity = reset_stuck_connectivity()
-    quality_reaet = schedule_connectivity_retest()
+    quality_reaet = schedule_quality_retest()
     stuck_quality = reset_stuck_quality()
     archived_dead = archive_dead_configs(days=3)
 
