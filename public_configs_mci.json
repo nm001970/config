@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-07T02:04:24.142690Z",
+  "generated_at": "2026-07-07T03:31:31.730194Z",
   "version": 2,
   "strategy": "hot_reserve_diverse_delivery_score",
   "hot_count": 5,
-  "reserve_count": 16,
+  "reserve_count": 25,
   "hot": [
     {
       "config_text": "vless://0047a8bc-0025-4d45-899b-c75c669f3ede@154.83.159.144:8443?security=reality&encryption=none&pbk=LT_0j3zQkaqgtJHvyaG24xz0IfmXUswVCTeC75Qsgjo&host=v2rayNplus-v2rayNplus-v2rayNplus&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=storage.yandex.net&sid=6f15101ff2cc4887#@mnproxyBot",
@@ -188,6 +188,21 @@
       "security": "reality"
     },
     {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.5:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11649,
+      "protocol": "vless",
+      "quality_score": 60.5,
+      "delivery_score": 75.15,
+      "latency": 487.73,
+      "ping_avg_ms": 586.85,
+      "download_mbps": 2.52,
+      "upload_mbps": 0.87,
+      "server": "45.195.111.5",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
       "config_text": "vless://2d1773bb-251e-4298-9105-4aa6f25e592c@46.182.24.124:443?mode=gun&security=reality&encryption=none&authority=&pbk=Kto_-HjLzajq1_Ffa69tSwfn-dIg1ow9elgaUBhkqyo&fp=chrome&type=grpc&serviceName=&sni=5post-gate.x5.ru#@mnproxyBot",
       "source_id": 11235,
       "protocol": "vless",
@@ -278,6 +293,21 @@
       "security": "reality"
     },
     {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.57:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11757,
+      "protocol": "vless",
+      "quality_score": 50.5,
+      "delivery_score": 63.93,
+      "latency": 475.62,
+      "ping_avg_ms": 607.47,
+      "download_mbps": 1.79,
+      "upload_mbps": 0.95,
+      "server": "45.195.111.57",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
       "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.151:443?security=reality&encryption=none&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&host=v2rayNplus-v2rayNplus-v2rayNplus&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=storage.yandex.net&sid=f4b4a6365558ea2e#@mnproxyBot",
       "source_id": 11284,
       "protocol": "vless",
@@ -308,6 +338,36 @@
       "security": "none"
     },
     {
+      "config_text": "vless://360c46b7-afe1-4e86-bfe1-ba09b5fcd8a6@45.198.87.104:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=2715592069f36fe7&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11650,
+      "protocol": "vless",
+      "quality_score": 47.5,
+      "delivery_score": 60.55,
+      "latency": 527.17,
+      "ping_avg_ms": 609.27,
+      "download_mbps": 1.78,
+      "upload_mbps": 0.83,
+      "server": "45.198.87.104",
+      "port": "8443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
+      "config_text": "vless://b52278a4-0493-4f1f-a92e-4e407234994b@dl4.gooniforoshi.fun:443?encryption=none&security=tls&sni=dl4.gooniforoshi.fun&allowinsecure=0&type=ws&host=dl4.gooniforoshi.fun&path=%2Fdownload.php#@mnproxyBot",
+      "source_id": 11679,
+      "protocol": "vless",
+      "quality_score": 46.5,
+      "delivery_score": 57.37,
+      "latency": 803.0,
+      "ping_avg_ms": 910.6,
+      "download_mbps": 3.13,
+      "upload_mbps": 0.87,
+      "server": "dl4.gooniforoshi.fun",
+      "port": "443",
+      "network_type": "ws",
+      "security": "tls"
+    },
+    {
       "config_text": "vmess://eyJhZGQiOiAiMTc4LjYzLjIzNy4xNTgiLCAiYWlkIjogIjAiLCAiYWxwbiI6ICIiLCAiZnAiOiAiIiwgImhvc3QiOiAiIiwgImlkIjogIjJkNGRkNjcyLTE4MGYtNDE1Yy05MDM1LWUyZmM0NjFkZDk1YSIsICJpbnNlY3VyZSI6ICIwIiwgIm5ldCI6ICJ0Y3AiLCAicGF0aCI6ICIvQWRhbUJhcmZpIiwgInBjcyI6ICIiLCAicG9ydCI6ICIyMDUzIiwgInBzIjogIlx1ZDgzZFx1ZGQyNUpvaW4rVGVsZWdyYW06QEZhcmFoX1ZQTlx1ZDgzZFx1ZGZlMyIsICJzY3kiOiAiYXV0byIsICJzbmkiOiAiIiwgInRscyI6ICIiLCAidHlwZSI6ICJodHRwIiwgInYiOiAiMiIsICJ2Y24iOiAiIn0=#@mnproxyBot",
       "source_id": 10885,
       "protocol": "vmess",
@@ -321,6 +381,81 @@
       "port": "2053",
       "network_type": "tcp",
       "security": "none"
+    },
+    {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.81:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11674,
+      "protocol": "vless",
+      "quality_score": 50.5,
+      "delivery_score": 63.79,
+      "latency": 471.97,
+      "ping_avg_ms": 606.65,
+      "download_mbps": 1.84,
+      "upload_mbps": 0.87,
+      "server": "45.195.111.81",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.162:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11625,
+      "protocol": "vless",
+      "quality_score": 50.5,
+      "delivery_score": 63.73,
+      "latency": 484.22,
+      "ping_avg_ms": 589.39,
+      "download_mbps": 1.78,
+      "upload_mbps": 0.89,
+      "server": "45.195.111.162",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
+      "config_text": "vless://f9ae5aed-9f23-4d9b-b4b2-e82a24c2d74a@45.195.111.111:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=2715592069f36fe7&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11634,
+      "protocol": "vless",
+      "quality_score": 47.5,
+      "delivery_score": 60.74,
+      "latency": 527.13,
+      "ping_avg_ms": 623.44,
+      "download_mbps": 1.71,
+      "upload_mbps": 0.94,
+      "server": "45.195.111.111",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.1:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11633,
+      "protocol": "vless",
+      "quality_score": 47.5,
+      "delivery_score": 60.71,
+      "latency": 514.42,
+      "ping_avg_ms": 613.47,
+      "download_mbps": 1.77,
+      "upload_mbps": 0.89,
+      "server": "45.195.111.1",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
+      "config_text": "vless://4af89b09-ce0c-4dab-b798-629d8b900af0@45.195.111.243:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=storage.yandex.net&fp=chrome&pbk=7zd9mJilgjOrg_ohtw23Vmio-pdnYqeP_r-kiWt87Cg&sid=f4b4a6365558ea2e&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 11718,
+      "protocol": "vless",
+      "quality_score": 47.5,
+      "delivery_score": 60.51,
+      "latency": 504.7,
+      "ping_avg_ms": 591.11,
+      "download_mbps": 1.73,
+      "upload_mbps": 0.85,
+      "server": "45.195.111.243",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
     }
   ],
   "configs": [
