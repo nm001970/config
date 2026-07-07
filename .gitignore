@@ -8,8 +8,6 @@ temp_configs/
 __pycache__/
 *.pyc
 *.pyo
-*.log
-logs/
 tools/xray/
 *.db-journal
 public_configs.json.tmp
@@ -24,3 +22,34 @@ database/repositories/bot_user_repository_before_user_db.py
 test.py
 test_summary.py
 remove_db.py
+
+# Runtime databases
+configs_mci.db
+# Public export runtime artifacts
+*.candidate.json
+*.last_good.json
+*.safe_export_status.json
+*.replace_tmp.json
+
+# Smart batch runtime artifacts
+smart_batch_plan.json
+smart_batch_ids.json
+smart_batch_plan_mci.json
+smart_batch_ids_mci.json
+
+# Local runner files
+run_publish_received_mci.bat
+run_mci_worker_console.bat
+send_mci_artifact_to_publisher.ps1
+run_mci_full_auto_DISABLED.bat
+
+# Runtime status and locks
+worker_status_mci.json
+publisher_status_mci.json
+worker_mci.lock
+publisher_mci.lock
+*.lock
+
+# Logs
+logs/
+*.log
