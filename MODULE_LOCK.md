@@ -111,3 +111,27 @@ Notes: smartcycle must reuse run_connectivity_ids instead of creating another mu
 Status: DISABLED
 Role: Old MCI runner.
 Reason: Laptop must not publish or run old full auto path.
+### auto_loop.py
+Status: REMOVED
+Role: Old loop-based local automation.
+Reason: Replaced by Task Scheduler and auto_cycle.py.
+
+### run_local_worker.bat
+Status: REMOVED
+Role: Old local worker runner.
+Reason: Replaced by explicit scheduled runners.
+
+### auto_update_and_publish.py
+Status: REMOVED
+Role: Old root helper for auto cycle + publish.
+Reason: Replaced by explicit auto_cycle.py and controlled publisher workflow.
+
+### public_health_cycle.py
+Status: REMOVED
+Role: Old public health helper.
+Reason: It called export_public_configs.py directly and bypassed safe_export_public_configs.py.
+
+### public_health_update_and_publish.py
+Status: REMOVED
+Role: Old public health + publish helper.
+Reason: Deprecated path; publishing is now handled through safe export and explicit publishers.
