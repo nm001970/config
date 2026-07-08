@@ -5,18 +5,63 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
+from runners.public_health_runner import PROJECT_ROOT
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
+
+def load_env_file():
+    """
+    Load simple KEY=VALUE pairs from .env.
+
+    Existing OS/process environment variables have priority.
+    This means values set by .bat files or PowerShell override .env.
+    """
+
+    env_path = PROJECT_ROOT / ".env"
+
+    if not env_path.exists():
+        return
+
+    with open(env_path, "r", encoding="utf-8-sig") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("#"):
+                continue
+
+            if "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+
+            key = key.strip()
+            value = value.strip()
+
+            if not key:
+                continue
+
+            if value.startswith(("'", '"')) and value.endswith(("'", '"')) and len(value) >= 2:
+                value = value[1:-1]
+
+            os.environ.setdefault(key, value)
+
+
+load_env_file()
+
+
 LOG_DIR = PROJECT_ROOT / "logs"
 
 ENABLE_FILE_LOG = os.getenv("AUTO_CYCLE_FILE_LOG", "true").lower() == "true"
 
 AUTO_CYCLE_MODE = os.getenv("AUTO_CYCLE_MODE", "full").lower()
 
-SMART_BATCH_LIMIT = int(os.getenv("SMART_BATCH_LIMIT", "3500"))
+SMART_BATCH_LIMIT = int(os.getenv("SMART_BATCH_LIMIT", "2000"))
 SMART_CONNECTIVITY_WORKERS = int(os.getenv("SMART_CONNECTIVITY_WORKERS", "5"))
-SMART_QUALITY_WORKERS = int(os.getenv("SMART_QUALITY_WORKERS", "3"))
+SMART_QUALITY_WORKERS = int(os.getenv("SMART_QUALITY_WORKERS", "5"))
 
 SMART_BATCH_PLAN_FILE = os.getenv("SMART_BATCH_PLAN_FILE", "smart_batch_plan.json")
 SMART_BATCH_IDS_FILE = os.getenv("SMART_BATCH_IDS_FILE", "smart_batch_ids.json")
