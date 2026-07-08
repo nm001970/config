@@ -36,6 +36,7 @@ smart_batch_plan.json
 smart_batch_ids.json
 smart_batch_plan_mci.json
 smart_batch_ids_mci.json
+smart_alive_ids.json
 
 # Local runner files
 run_publish_received_mci.bat
@@ -53,3 +54,4 @@ publisher_mci.lock
 # Logs
 logs/
 *.log
+

@@ -18,8 +18,7 @@ def run_connectivity_ids(ids, workers=5, title="CONNECTIVITY IDS"):
     """
     Run connectivity tests for explicit config IDs.
 
-    This mirrors runners.quality_runner.run_quality_ids
-    and is used by smart batch testing.
+    Used by smart batch testing.
     """
 
     ids = list(ids or [])
@@ -45,16 +44,16 @@ def run_connectivity_ids(ids, workers=5, title="CONNECTIVITY IDS"):
         processes = []
 
         for config_id in batch_ids:
-            p = Process(
+            process = Process(
                 target=run_one_work,
-                args=(config_id,)
+                args=(config_id,),
             )
 
-            p.start()
-            processes.append(p)
+            process.start()
+            processes.append(process)
 
-        for p in processes:
-            p.join()
+        for process in processes:
+            process.join()
 
         total_tested += len(batch_ids)
 
@@ -70,10 +69,16 @@ def run_connectivity_ids(ids, workers=5, title="CONNECTIVITY IDS"):
 
 
 def run_connectivity_scan(workers=5, rounds=1):
+    """
+    Backward-compatible connectivity scan.
+
+    Used by main.py fullcycle and legacy full-cycle paths.
+    Claims batches through worker.db_queries, then reuses run_connectivity_ids.
+    """
+
     total_claimed = 0
 
     for round_number in range(1, rounds + 1):
-
         print("\n" + "=" * 40)
         print(f"CONNECTIVITY ROUND {round_number}")
         print("=" * 40)
@@ -91,7 +96,7 @@ def run_connectivity_scan(workers=5, rounds=1):
         run_connectivity_ids(
             ids,
             workers=workers,
-            title=f"CONNECTIVITY ROUND {round_number}"
+            title=f"CONNECTIVITY ROUND {round_number}",
         )
 
         print(f"CONNECTIVITY ROUND {round_number} DONE")
