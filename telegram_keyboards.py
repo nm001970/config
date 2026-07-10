@@ -8,6 +8,11 @@ load_dotenv()
 
 CHANNEL_URL = os.getenv("CHANNEL_URL")
 
+ENABLE_MANUAL_CONFIGS = os.getenv(
+    "ENABLE_MANUAL_CONFIGS",
+    "false"
+).lower() == "true"
+
 
 def main_menu_keyboard():
     keyboard = [
@@ -17,35 +22,44 @@ def main_menu_keyboard():
                 callback_data="menu:sub"
             )
         ],
-        [
-            InlineKeyboardButton(
-                text="🧩 دریافت کانفیگ دستی",
-                callback_data="menu:manual"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="📊 وضعیت اشتراک",
-                callback_data="menu:status"
-            ),
-            InlineKeyboardButton(
-                text="🛡️ حریم خصوصی",
-                callback_data="menu:privacy"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="📘 راهنما",
-                callback_data="menu:help"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="💳 تمدید اشتراک",
-                callback_data="menu:renew"
-            )
-        ],
     ]
+
+    if ENABLE_MANUAL_CONFIGS:
+        keyboard.append(
+            [
+                InlineKeyboardButton(
+                    text="🧩 دریافت کانفیگ دستی",
+                    callback_data="menu:manual"
+                )
+            ]
+        )
+
+    keyboard.extend(
+        [
+            [
+                InlineKeyboardButton(
+                    text="📊 وضعیت اشتراک",
+                    callback_data="menu:status"
+                ),
+                InlineKeyboardButton(
+                    text="🛡️ حریم خصوصی",
+                    callback_data="menu:privacy"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="📘 راهنما",
+                    callback_data="menu:help"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="💳 تمدید اشتراک",
+                    callback_data="menu:renew"
+                )
+            ],
+        ]
+    )
 
     if CHANNEL_URL:
         keyboard.append(
