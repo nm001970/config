@@ -1,4 +1,3 @@
-import argparse
 import os
 import subprocess
 import sys
@@ -7,176 +6,156 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-PUBLIC_CONFIGS_FILE = "public_configs.json"
-BRANCH_NAME = os.getenv("AUTO_PUBLISH_BRANCH", "main")
+
+PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
+GIT_BRANCH = os.getenv("GIT_BRANCH", "main")
+DRY_RUN = os.getenv("AUTO_PUBLISH_DRY_RUN", "false").lower() == "true"
 
 
 def now_text():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def run_command(command, check=True):
-    print(f"\n$ {' '.join(command)}")
+def run(command, check=True, capture=False, env=None):
+    print()
+    print("$", " ".join(command))
 
-    env = os.environ.copy()
-    env["PYTHONIOENCODING"] = "utf-8"
+    if capture:
+        result = subprocess.run(
+            command,
+            cwd=PROJECT_ROOT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env,
+        )
 
-    result = subprocess.run(
-        command,
-        cwd=PROJECT_ROOT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        env=env,
-    )
+        output = result.stdout or ""
+        print(output, end="")
 
-    if result.stdout:
-        print(result.stdout, end="")
+    else:
+        result = subprocess.run(
+            command,
+            cwd=PROJECT_ROOT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            env=env,
+        )
+
+        output = ""
 
     if check and result.returncode != 0:
         raise RuntimeError(
             f"Command failed with exit code {result.returncode}: {' '.join(command)}"
         )
 
-    return result
+    return result.returncode, output
 
 
-def get_git_status_lines():
-    result = run_command(
-        ["git", "status", "--porcelain", "--untracked-files=all"],
-        check=True,
+def normalize_path(path_text):
+    return path_text.replace("\\", "/")
+
+
+def get_git_status_tracked():
+    _, output = run(
+        ["git", "status", "--porcelain", "--untracked-files=no"],
+        capture=True,
     )
 
-    return [
-        line.strip()
-        for line in result.stdout.splitlines()
-        if line.strip()
-    ]
+    return [line for line in output.splitlines() if line.strip()]
 
 
-def extract_status_path(status_line):
-    if status_line.startswith("?? "):
-        return status_line[3:].strip()
+def ensure_only_target_changed(target_file):
+    target_norm = normalize_path(target_file)
+    lines = get_git_status_tracked()
 
-    return status_line[2:].strip()
-
-
-def ensure_only_public_configs_changed():
-    status_lines = get_git_status_lines()
-
-    if not status_lines:
+    if not lines:
         print("NO GIT CHANGES FOUND")
         return False
 
-    blocked = []
+    unexpected = []
 
-    for line in status_lines:
-        path = extract_status_path(line)
+    for line in lines:
+        path = line[3:].strip()
+        path_norm = normalize_path(path)
 
-        if path.replace("\\", "/") != PUBLIC_CONFIGS_FILE:
-            blocked.append(line)
+        if path_norm != target_norm:
+            unexpected.append(line)
 
-    if blocked:
-        print("\nBLOCKED: non-public config changes detected.")
-        print("auto_publish.py is allowed to publish only public_configs.json.")
-        print("\nUnexpected changes:")
-        for item in blocked:
-            print(f"  {item}")
+    if unexpected:
+        print()
+        print("UNEXPECTED GIT CHANGES FOUND.")
+        print("Auto publish refuses to continue because unrelated files are modified.")
+        print()
+        for item in unexpected:
+            print(item)
 
-        raise RuntimeError(
-            "Working tree contains changes other than public_configs.json"
-        )
+        raise RuntimeError("Unrelated git changes found")
 
     return True
 
 
-def ensure_public_configs_exists():
-    path = PROJECT_ROOT / PUBLIC_CONFIGS_FILE
+def validate_public_export(target_file):
+    env = os.environ.copy()
+    env["PUBLIC_CONFIGS_FILE"] = target_file
 
-    if not path.exists():
-        raise FileNotFoundError(f"{PUBLIC_CONFIGS_FILE} not found")
+    print()
+    print("Running public export check...")
 
-
-def run_public_export_check():
-    print("\nRunning public export check...")
-    run_command([sys.executable, "check_public_export.py"], check=True)
-
-
-def has_public_configs_diff():
-    result = run_command(
-        ["git", "diff", "--quiet", "--", PUBLIC_CONFIGS_FILE],
-        check=False,
+    run(
+        [sys.executable, "check_public_export.py"],
+        env=env,
     )
 
-    # exit code 0 یعنی تغییری نیست
-    # exit code 1 یعنی تغییر وجود دارد
-    if result.returncode == 0:
-        return False
 
-    if result.returncode == 1:
-        return True
+def commit_and_push(target_file):
+    message = f"Update {target_file}"
 
-    raise RuntimeError("git diff failed")
+    run(["git", "add", target_file])
 
+    run(["git", "commit", "-m", message])
 
-def publish_public_configs(dry_run=False):
-    print("=" * 70)
-    print("AUTO PUBLISH STARTED")
-    print("TIME:", now_text())
-    print("FILE:", PUBLIC_CONFIGS_FILE)
-    print("BRANCH:", BRANCH_NAME)
-    print("DRY RUN:", dry_run)
-    print("=" * 70)
+    run(["git", "pull", "--rebase", "origin", GIT_BRANCH])
 
-    ensure_public_configs_exists()
-    run_public_export_check()
-
-    if not ensure_only_public_configs_changed():
-        print("No changes to publish.")
-        return
-
-    if not has_public_configs_diff():
-        print("No public config diff to publish.")
-        return
-
-    if dry_run:
-        print("\nDRY RUN OK")
-        print("Would run:")
-        print(f"  git add {PUBLIC_CONFIGS_FILE}")
-        print("  git commit --amend --no-edit")
-        print(f"  git push --force-with-lease origin {BRANCH_NAME}")
-        return
-
-    run_command(["git", "add", PUBLIC_CONFIGS_FILE], check=True)
-
-    run_command(
-        ["git", "commit", "--amend", "--no-edit"],
-        check=True,
-    )
-
-    run_command(
-        ["git", "push", "--force-with-lease", "origin", BRANCH_NAME],
-        check=True,
-    )
-
-    print("\n" + "="* 70)
-    print("AUTO PUBLISH FINISHED SUCCESSFULLY")
-    print("=" * 70)
+    run(["git", "push", "origin", GIT_BRANCH])
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Check what would be published without changing git history.",
-    )
+    print("=" * 70)
+    print("AUTO PUBLISH STARTED")
+    print(f"TIME: {now_text()}")
+    print(f"FILE: {PUBLIC_CONFIGS_FILE}")
+    print(f"BRANCH: {GIT_BRANCH}")
+    print(f"DRY RUN: {DRY_RUN}")
+    print("=" * 70)
 
-    args = parser.parse_args()
+    target_path = PROJECT_ROOT / PUBLIC_CONFIGS_FILE
 
-    publish_public_configs(dry_run=args.dry_run)
+    if not target_path.exists():
+        raise FileNotFoundError(f"Public configs file not found: {target_path}")
+
+    validate_public_export(PUBLIC_CONFIGS_FILE)
+
+    has_target_change = ensure_only_target_changed(PUBLIC_CONFIGS_FILE)
+
+    if not has_target_change:
+        print("No changes to publish.")
+        return
+
+    if DRY_RUN:
+        print()
+        print("DRY RUN ENABLED. No commit or push performed.")
+        return
+
+    commit_and_push(PUBLIC_CONFIGS_FILE)
+
+    print()
+    print("=" * 70)
+    print("AUTO PUBLISH FINISHED SUCCESSFULLY")
+    print("=" * 70)
 
 
 if __name__ == "__main__":
