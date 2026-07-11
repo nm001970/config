@@ -318,3 +318,52 @@ def get_alive_config_ids_from_ids(config_ids):
 
     finally:
         session.close()
+
+
+def get_alive_pending_quality_ids(limit=100, exclude_ids=None):
+    """
+    Return alive configs that still need quality validation.
+
+    This prevents the pool from drifting into:
+      status='alive'
+      quality_status!='qualified'
+    """
+
+    exclude_ids = {
+        int(x)
+        for x in (exclude_ids or [])
+    }
+
+    session = SessionLocal()
+
+    try:
+        query = (
+            session.query(Config.id)
+            .filter(Config.status == "alive")
+            .filter(
+                or_(
+                    Config.quality_status == None,
+                    Config.quality_status != "qualified",
+                )
+            )
+        )
+
+        if exclude_ids:
+            query = query.filter(not_(Config.id.in_(list(exclude_ids))))
+
+        rows = (
+            query
+            .order_by(
+                Config.last_quality_checked.is_(None).desc(),
+                Config.last_quality_checked.asc(),
+                Config.latency.asc(),
+                Config.id.desc(),
+            )
+            .limit(int(limit))
+            .all()
+        )
+
+        return [row[0] for row in rows]
+
+    finally:
+        session.close()

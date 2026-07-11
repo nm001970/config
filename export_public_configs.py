@@ -9,6 +9,45 @@ from database.models import Config
 from worker.config_sanitizer import sanitize_config_for_delivery
 from worker.parsers.factory import parse_config
 
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
+def load_env_file():
+    env_path = PROJECT_ROOT / ".env"
+
+    if not env_path.exists():
+        return
+
+    with open(env_path, "r", encoding="utf-8-sig") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("#"):
+                continue
+
+            if "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+
+            key = key.strip()
+            value = value.strip()
+
+            if not key:
+                continue
+
+            if value.startswith(("'", '"')) and value.endswith(("'", '"')) and len(value) >= 2:
+                value = value[1:-1]
+
+            os.environ.setdefault(key, value)
+
+
+load_env_file()
 
 
 EXPORT_PATH = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")

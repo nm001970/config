@@ -2,6 +2,27 @@ from database.db import SessionLocal
 from database.models import Config
 from datetime import datetime, timedelta
 
+def reset_quality_fields(row, reason=None):
+    row.quality_status = "not_tested"
+    row.quality_score = 0
+    row.ping_min_ms = None
+    row.ping_avg_ms = None
+    row.download_mbps = None
+    row.upload_mbps = None
+    row.quality_error = reason
+    row.last_quality_checked = None
+
+
+def reject_quality_fields(row, reason=None):
+    row.quality_status = "rejected"
+    row.quality_score = 0
+    row.ping_min_ms = None
+    row.ping_avg_ms = None
+    row.download_mbps = None
+    row.upload_mbps = None
+    row.quality_error = reason
+
+
 SUPPORTED_CONNECTIVITY_PROTOCOLS= [
     "vless",
     "vmess",
@@ -20,28 +41,50 @@ def get_next_config():
 def update_result(config_id, status, latency, error=None, exist_ip=None):
     session = SessionLocal()
 
-    row = (
-        session.query(Config)
-        .filter(Config.id == config_id)
-        .first()
-    )
+    try:
+        row = (
+            session.query(Config)
+            .filter(Config.id == config_id)
+            .first()
+        )
 
-    if row:
-        row.status = status
-        row.latency = latency
-        row.last_error = error
-        row.exit_ip = exist_ip
-        row.last_checked = datetime.utcnow()
+        if row:
+            previous_quality_status = row.quality_status
 
-        if status == "alive":
-            row.success_count += 1
+            row.status = status
+            row.latency = latency
+            row.last_error = error
+            row.exit_ip = exist_ip
+            row.last_checked = datetime.utcnow()
 
-        elif status in ("dead", "error"):
-            row.fail_count += 1
+            if status == "alive":
+                row.success_count += 1
 
-        session.commit()
+                # A fresh connectivity pass invalidates old quality data.
+                # The config must be quality-tested again in the same/new cycle.
+                if previous_quality_status == "qualified":
+                    reset_quality_fields(
+                        row,
+                        reason="quality_reset_after_connectivity_recheck"
+                    )
 
-    session.close()
+            elif status in ("dead", "error"):
+                row.fail_count += 1
+
+                # A dead/error connectivity result must invalidate quality.
+                reject_quality_fields(
+                    row,
+                    reason=error or f"connectivity_{status}"
+                )
+
+            session.commit()
+
+    except Exception:
+        session.rollback()
+        raise
+
+    finally:
+        session.close()
 
 def get_next_vless():
 
@@ -130,27 +173,7 @@ def reset_stuck_configs():
 
     count = len(rows)
 
-    q_rows = (
-        session.query(Config)
-        .filter(
-            Config.quality_status != "not_tested"
-        ).order_by(Config.latency.asc())
-        .all()
-    )
-
-    for q_row in q_rows:
-        q_row.quality_status = "not_tested"
-        q_row.quality_score= 0
-        q_row.quality_error= None
-
-    session.commit()
-
-    q_count = len(q_rows)
-
-    session.close()
-
-
-    return count, q_count
+    return count, 0
 
 
 def claim_supported_connectivity_batch(limit=None):

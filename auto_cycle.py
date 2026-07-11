@@ -63,6 +63,10 @@ SMART_BATCH_LIMIT = int(os.getenv("SMART_BATCH_LIMIT", "2000"))
 SMART_CONNECTIVITY_WORKERS = int(os.getenv("SMART_CONNECTIVITY_WORKERS", "5"))
 SMART_QUALITY_WORKERS = int(os.getenv("SMART_QUALITY_WORKERS", "5"))
 
+SMART_QUALITY_BACKFILL_LIMIT = int(
+    os.getenv("SMART_QUALITY_BACKFILL_LIMIT", "100")
+)
+
 SMART_BATCH_PLAN_FILE = os.getenv("SMART_BATCH_PLAN_FILE", "smart_batch_plan.json")
 SMART_BATCH_IDS_FILE = os.getenv("SMART_BATCH_IDS_FILE", "smart_batch_ids.json")
 SMART_ALIVE_IDS_FILE = os.getenv("SMART_ALIVE_IDS_FILE", "smart_alive_ids.json")
@@ -193,34 +197,58 @@ def run_smart_connectivity():
 
 
 def run_smart_quality():
-    from database.repositories.config_repository import get_alive_config_ids_from_ids
+    from database.repositories.config_repository import (
+        get_alive_config_ids_from_ids,
+        get_alive_pending_quality_ids,
+    )
     from runners.quality_runner import run_quality_ids
 
     ids = read_smart_batch_ids()
 
     alive_ids = get_alive_config_ids_from_ids(ids)
 
+    backfill_ids = get_alive_pending_quality_ids(
+        limit=SMART_QUALITY_BACKFILL_LIMIT,
+        exclude_ids=alive_ids,
+    )
+
+    quality_ids = []
+    seen = set()
+
+    for config_id in alive_ids + backfill_ids:
+        if config_id in seen:
+            continue
+
+        seen.add(config_id)
+        quality_ids.append(config_id)
+
     payload = {
         "created_at": datetime.now().isoformat(),
         "source_ids_file": SMART_BATCH_IDS_FILE,
         "source_total": len(ids),
         "alive_total": len(alive_ids),
-        "ids": alive_ids,
+        "backfill_total": len(backfill_ids),
+        "quality_total": len(quality_ids),
+        "alive_ids": alive_ids,
+        "backfill_ids": backfill_ids,
+        "ids": quality_ids,
     }
 
     output_path = write_json_runtime(SMART_ALIVE_IDS_FILE, payload)
 
     print("SMART ALIVE IDS:", len(alive_ids))
+    print("SMART QUALITY BACKFILL IDS:", len(backfill_ids))
+    print("SMART QUALITY TOTAL IDS:", len(quality_ids))
     print("SMART ALIVE IDS FILE:", output_path)
 
-    if not alive_ids:
-        print("NO ALIVE IDS FOR SMART QUALITY")
+    if not quality_ids:
+        print("NO IDS FOR SMART QUALITY")
         return 0
 
     return run_quality_ids(
-        alive_ids,
+        quality_ids,
         workers=SMART_QUALITY_WORKERS,
-        title="SMART QUALITY"
+        title="SMART QUALITY + BACKFILL"
     )
 
 

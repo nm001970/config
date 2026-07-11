@@ -9,6 +9,43 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
+def load_env_file():
+    env_path = PROJECT_ROOT / ".env"
+
+    if not env_path.exists():
+        return
+
+    with open(env_path, "r", encoding="utf-8-sig") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("#"):
+                continue
+
+            if "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+
+            key = key.strip()
+            value = value.strip()
+
+            if not key:
+                continue
+
+            if value.startswith(("'", '"')) and value.endswith(("'", '"')) and len(value) >= 2:
+                value = value[1:-1]
+
+            os.environ.setdefault(key, value)
+
+
+load_env_file()
+
+
+
 TARGET_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
 TARGET_PATH = Path(TARGET_FILE)
 
@@ -29,6 +66,10 @@ STATUS_PATH = TARGET_PATH.with_name(
 
 ALLOW_LAST_GOOD_FALLBACK_SUCCESS = (
     os.getenv("SAFE_EXPORT_ALLOW_LAST_GOOD_SUCCESS", "false").lower() == "true"
+)
+
+ENABLE_DELIVERY_VALIDATION = (
+    os.getenv("ENABLE_DELIVERY_VALIDATION", "false").lower() == "true"
 )
 
 
@@ -182,9 +223,24 @@ def main():
 
         candidate_info = validate_public_export(CANDIDATE_PATH)
 
+        if ENABLE_DELIVERY_VALIDATION:
+            print()
+            print("[2.5/4] Run delivery validation gate...")
+
+            run_command(
+                [
+                    sys.executable,
+                    "-u",
+                    "delivery_validate_public_configs.py",
+                    str(CANDIDATE_PATH),
+                ],
+                check=True,
+            )
+
+            candidate_info = validate_public_export(CANDIDATE_PATH)
+
         print()
         print("[3/4] Candidate is valid. Replace target atomically...")
-
         temp_replace = TARGET_PATH.with_name(
             f"{TARGET_PATH.stem}.replace_tmp{TARGET_PATH.suffix}"
         )
