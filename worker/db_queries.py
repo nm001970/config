@@ -148,32 +148,48 @@ def claim_next_vless():
 
     return row
 
-def reset_stuck_configs():
+def reset_stuck_configs(timeout_minutes=2):
+    """
+    Recover connectivity rows left in status='testing' by an interrupted cycle.
+
+    Only the connectivity state is reset. Quality fields are intentionally
+    preserved until the config receives a fresh connectivity result.
+    """
 
     session = SessionLocal()
 
-    timeout = datetime.utcnow() - timedelta(
-        minutes=2
-    )
-
-    rows = (
-        session.query(Config)
-        .filter(
-            Config.status == "testing",
-            Config.last_checked < timeout
+    try:
+        timeout = datetime.utcnow() - timedelta(
+            minutes=timeout_minutes
         )
-        .all()
-    )
 
-    for row in rows:
+        rows = (
+            session.query(Config)
+            .filter(Config.status == "testing")
+            .filter(
+                (Config.last_checked.is_(None))
+                | (Config.last_checked < timeout)
+            )
+            .all()
+        )
 
-        row.status = "new"
+        for row in rows:
+            row.status = "new"
+            row.last_checked = None
+            row.last_error = "recovered_from_stuck_testing"
 
-    session.commit()
+        count = len(rows)
 
-    count = len(rows)
+        session.commit()
 
-    return count, 0
+        return count, 0
+
+    except Exception:
+        session.rollback()
+        raise
+
+    finally:
+        session.close()
 
 
 def claim_supported_connectivity_batch(limit=None):

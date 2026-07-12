@@ -71,6 +71,32 @@ SMART_BATCH_PLAN_FILE = os.getenv("SMART_BATCH_PLAN_FILE", "smart_batch_plan.jso
 SMART_BATCH_IDS_FILE = os.getenv("SMART_BATCH_IDS_FILE", "smart_batch_ids.json")
 SMART_ALIVE_IDS_FILE = os.getenv("SMART_ALIVE_IDS_FILE", "smart_alive_ids.json")
 
+def recover_stuck_testing_configs():
+    from worker.db_queries import reset_stuck_configs
+
+    timeout_minutes = int(
+        os.getenv(
+            "STUCK_TESTING_TIMEOUT_MINUTES",
+            "2",
+        )
+    )
+
+    print()
+    print("=" * 70)
+    print("RECOVER STUCK TESTING CONFIGS")
+    print("=" * 70)
+    print("TIMEOUT_MINUTES:", timeout_minutes)
+
+    count, quality_count = reset_stuck_configs(
+        timeout_minutes=timeout_minutes
+    )
+
+    print("RESET_STUCK_CONNECTIVITY:", count)
+    print("RESET_QUALITY_ROWS:", quality_count)
+    print("=" * 70)
+
+
+
 
 def now_text():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -351,6 +377,7 @@ def main():
     emit(log_file, "MODE: " + AUTO_CYCLE_MODE)
     emit(log_file, "LOG FILE: " + (str(log_file) if log_file else "DISABLED"))
     emit(log_file, "=" * 70)
+    recover_stuck_testing_configs()
 
     try:
         if AUTO_CYCLE_MODE == "full":
