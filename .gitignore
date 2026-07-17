@@ -1,57 +1,125 @@
+# ============================================================
+# Environment and secrets
+# ============================================================
+
 .env
-.venv
-configs.db
-configs_*.db
-configs_before_*.db
-temp_config.json
-temp_configs/
+.env.*
+!.env.example
+
+.venv/
+venv/
+
+# ============================================================
+# Python generated files
+# ============================================================
+
 __pycache__/
 *.pyc
 *.pyo
-tools/xray/
-*.db-journal
-public_configs.json.tmp
-export_public_configs_before_pool.py
-subscription_api_before_pool.py
-database/repositories/public_config_repository_before_pool.py
-users.db
-export_public_configs_before_delivery_score.py
-export_public_config.py
-database/repositories/bot_user_repository_before_user_db.py
-# Local temporary scripts
-test.py
-test_summary.py
-remove_db.py
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
+# ============================================================
+# Local editor and OS files
+# ============================================================
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ============================================================
 # Runtime databases
+# ============================================================
+
+configs.db
+configs_*.db
+configs_before_*.db
+configs.before_*.db
 configs_mci.db
-# Public export runtime artifacts
+
+users.db
+
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ============================================================
+# Xray local runtime
+# ============================================================
+
+tools/xray/
+temp_config.json
+temp_configs/
+test_port/
+
+# ============================================================
+# Runtime directories, logs and locks
+# ============================================================
+
+.runtime/
+logs/
+
+*.log
+*.lock
+
+# ============================================================
+# Public export temporary artifacts
+#
+# public_configs.json and public_configs_mci.json intentionally
+# remain tracked and must not be ignored.
+# ============================================================
+
 *.candidate.json
 *.last_good.json
 *.safe_export_status.json
 *.replace_tmp.json
 
+public_configs.before_*.json
+public_configs.pool_preview*.json
+
+# ============================================================
 # Smart batch runtime artifacts
+# ============================================================
+
 smart_batch_plan.json
 smart_batch_ids.json
+
 smart_batch_plan_mci.json
 smart_batch_ids_mci.json
+
 smart_alive_ids.json
 
-# Local runner files
+# ============================================================
+# Machine-local MCI legacy runners and transport scripts
+# ============================================================
+
 run_publish_received_mci.bat
 run_mci_worker_console.bat
 send_mci_artifact_to_publisher.ps1
 run_mci_full_auto_DISABLED.bat
 
-# Runtime status and locks
-worker_status_mci.json
-publisher_status_mci.json
-worker_mci.lock
-publisher_mci.lock
-*.lock
+# ============================================================
+# Historical source backups
+# ============================================================
 
-# Logs
-logs/
-*.log
+export_public_configs_before_pool.py
+export_public_configs_before_delivery_score.py
+export_public_config.py
 
+subscription_api_before_pool.py
+
+database/repositories/public_config_repository_before_pool.py
+database/repositories/bot_user_repository_before_user_db.py
+
+# ============================================================
+# Local temporary scripts
+# ============================================================
+
+test.py
+test_summary.py
+remove_db.py
+p0.bat

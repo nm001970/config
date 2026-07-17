@@ -45,6 +45,16 @@ def load_env_file():
 load_env_file()
 
 
+EXPORT_SCRIPT = os.getenv(
+    "PUBLIC_EXPORT_SCRIPT",
+    "export_public_configs_pool_metrics.py",
+).strip()
+
+EXPORT_SCRIPT_PATH = Path(EXPORT_SCRIPT)
+
+if not EXPORT_SCRIPT_PATH.is_absolute():
+    EXPORT_SCRIPT_PATH = PROJECT_ROOT / EXPORT_SCRIPT_PATH
+
 
 TARGET_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
 TARGET_PATH = Path(TARGET_FILE)
@@ -197,11 +207,23 @@ def main():
     print("TIME:", now_text())
     print("PROJECT:", PROJECT_ROOT)
     print("TARGET:", TARGET_PATH)
+    print("EXPORTER:", EXPORT_SCRIPT_PATH)
     print("CANDIDATE:", CANDIDATE_PATH)
     print("LAST_GOOD:", LAST_GOOD_PATH)
     print("=" * 70)
 
-    write_status("started", "Safe export started.")
+    if not EXPORT_SCRIPT_PATH.exists():
+        raise FileNotFoundError(
+            f"Public export script not found: {EXPORT_SCRIPT_PATH}"
+        )
+
+    write_status(
+        "started",
+        "Safe export started.",
+        {
+            "export_script": str(EXPORT_SCRIPT_PATH),
+        },
+    )
 
     backup_current_target_if_valid()
 
@@ -210,10 +232,10 @@ def main():
 
     try:
         print()
-        print("[1/4] Run export_public_configs.py into candidate file...")
+        print(f"[1/4] Run {EXPORT_SCRIPT_PATH.name} into candidate file...")
 
         run_command(
-            [sys.executable, "-u", "export_public_configs.py"],
+            [sys.executable, "-u", str(EXPORT_SCRIPT_PATH)],
             env_extra={"PUBLIC_CONFIGS_FILE": str(CANDIDATE_PATH)},
             check=True,
         )

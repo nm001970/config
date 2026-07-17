@@ -28,6 +28,42 @@ def _get(data, key, default=""):
         return default
     return value
 
+def _normalize_security(value) -> str:
+    if isinstance(value, bool):
+        return "tls" if value else "none"
+
+    if value is None:
+        return "none"
+
+    security = str(value).strip().lower()
+
+    if security in {
+        "tls",
+        "true",
+        "1",
+        "yes",
+        "on",
+    }:
+        return "tls"
+
+    if security == "reality":
+        return "reality"
+
+    if security in {
+        "",
+        "none",
+        "false",
+        "0",
+        "no",
+        "off",
+        "auto",
+    }:
+        return "none"
+
+    # مقدار ناشناخته نباید مستقیماً وارد
+    # streamSettings.security شود.
+    return "none"
+
 
 def parse(config_url: str):
     data = _decode_vmess_payload(config_url)
@@ -39,7 +75,9 @@ def parse(config_url: str):
     alter_id = int(_get(data, "aid", 0) or 0)
 
     network = str(_get(data, "net", "tcp") or "tcp").strip()
-    security = str(_get(data, "tls", "none") or "none").strip()
+    security = _normalize_security(
+    _get(data, "tls", None)
+)
 
     if security == "":
         security = "none"

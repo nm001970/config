@@ -166,3 +166,120 @@ class ConfigOperatorResult(Base):
         ),
     )
 
+class ConfigPool(Base):
+    __tablename__ = "config_pool"
+
+    id = Column(Integer, primary_key=True)
+
+    config_id = Column(
+        Integer,
+        nullable=False,
+        index=True,
+    )
+
+    operator = Column(
+        String,
+        nullable=False,
+        index=True,
+    )
+
+    # none | reserve | hot | quarantined
+    pool_status = Column(
+        String,
+        nullable=False,
+        default="none",
+        index=True,
+    )
+
+    # not_tested | testing | accepted | rejected
+    gate_status = Column(
+        String,
+        nullable=False,
+        default="not_tested",
+        index=True,
+    )
+
+    gate_checked_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    gate_error = Column(
+        String,
+        nullable=True,
+    )
+
+    gate_exit_ip = Column(
+        String,
+        nullable=True,
+    )
+
+    gate_download_mbps = Column(
+        Float,
+        nullable=True,
+    )
+
+        # unknown | checking | healthy | suspect | failed
+    health_status = Column(
+        String,
+        nullable=False,
+        default="unknown",
+        index=True,
+    )
+
+    health_checked_at = Column(
+        DateTime,
+        nullable=True,
+    )
+
+    health_success_streak = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    health_fail_streak = Column(
+        Integer,
+        nullable=False,
+        default=0,
+    )
+
+    health_avg_download_mbps = Column(
+        Float,
+        nullable=True,
+    )
+
+    health_median_download_mbps = Column(
+        Float,
+        nullable=True,
+    )
+
+    health_error = Column(
+        String,
+        nullable=True,
+    )
+
+    # فعلاً استفاده نمی‌شود؛ برای Hot نسخه بعدی آماده است.
+    hot_slot = Column(
+        Integer,
+        nullable=True,
+    )
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+    )
+
+    updated_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "config_id",
+            "operator",
+            name="uq_config_pool_config_operator",
+        ),
+    )

@@ -1,4 +1,14 @@
-from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, unquote
+import base64
+import html
+import json
+
+from urllib.parse import (
+    parse_qsl,
+    unquote,
+    urlencode,
+    urlsplit,
+    urlunsplit,
+)
 
 
 BRAND_REMARK = "@mnproxyBot"
@@ -86,6 +96,68 @@ def has_suspicious_query_at(value: str) -> bool:
     return "@" in unquote(value)
 
 
+def decode_vmess_payload(config_text: str) -> dict:
+    payload = config_text.replace(
+        "vmess://",
+        "",
+        1,
+    ).strip()
+
+    # نسخه‌های قبلی Sanitizer ممکن است Fragment به Base64
+    # اضافه کرده باشند. Fragment جزو payload نیست.
+    payload = payload.split("#", 1)[0]
+
+    payload = unquote(payload)
+    payload = html.unescape(payload)
+
+    padding = "=" * (-len(payload) % 4)
+    padded_payload = payload + padding
+
+    try:
+        decoded = base64.urlsafe_b64decode(
+            padded_payload
+        )
+    except Exception:
+        decoded = base64.b64decode(
+            padded_payload
+        )
+
+    data = json.loads(
+        decoded.decode(
+            "utf-8",
+            errors="strict",
+        )
+    )
+
+    if not isinstance(data, dict):
+        raise ValueError(
+            "VMess payload must decode to a JSON object"
+        )
+
+    return data
+
+
+def sanitize_vmess_config(
+    config_text: str,
+    remark: str,
+) -> str:
+    data = decode_vmess_payload(config_text)
+
+    # در VMess عنوان کانفیگ داخل JSON و کلید ps قرار دارد.
+    # افزودن #fragment به انتهای Base64 باعث خرابی Parser می‌شود.
+    data["ps"] = remark
+
+    encoded_payload = base64.b64encode(
+        json.dumps(
+            data,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).decode("ascii")
+
+    return "vmess://" + encoded_payload
+
+
 def sanitize_config_text(config_text: str, remark: str = BRAND_REMARK):
     """
     خروجی:
@@ -100,6 +172,15 @@ def sanitize_config_text(config_text: str, remark: str = BRAND_REMARK):
 
     if not config_text:
         return None
+
+    if config_text.lower().startswith("vmess://"):
+        try:
+            return sanitize_vmess_config(
+                config_text,
+                remark,
+            )
+        except Exception:
+            return None
 
     try:
         parts = urlsplit(config_text)

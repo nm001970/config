@@ -29,28 +29,17 @@ def build(config, socks_port):
         }
 
     if config.tls["security"] == "reality":
+        public_key = config.tls.get("pbk", "")
+
+        if not public_key:
+            raise ValueError("Invalid VLESS REALITY public key")
 
         stream_settings["realitySettings"] = {
-            "serverName": config.tls.get(
-                "sni",
-                ""
-            ),
-            "fingerprint": config.tls.get(
-                "fp",
-                "chrome"
-            ),
-            "publicKey": config.tls.get(
-                "pbk",
-                ""
-            ),
-            "shortId": config.tls.get(
-                "sid",
-                ""
-            ),
-            "spiderX": config.tls.get(
-                "spx",
-                "/"
-            )
+            "serverName": config.tls.get("sni", "") or config.server,
+            "fingerprint": config.tls.get("fp", "chrome") or "chrome",
+            "password": public_key,
+            "shortId": config.tls.get("sid", "") or "",
+            "spiderX": config.tls.get("spx", "/") or "/",
         }
 
     xray_config = {
