@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-17T21:45:11.683473Z",
+  "generated_at": "2026-07-17T21:55:21.371422Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "mci",
   "hot_count": 5,
-  "reserve_count": 13,
+  "reserve_count": 14,
   "pool_hot_rows": 5,
-  "pool_reserve_rows": 13,
+  "pool_reserve_rows": 14,
   "hot": [
     {
       "config_text": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.34:8080#@mnproxyBot",
@@ -105,6 +105,25 @@
     }
   ],
   "reserve": [
+    {
+      "config_text": "vless://31ad4c74-a799-44a6-a12f-d10a9bf71a35@91.107.182.113:40350?security=reality&encryption=none&pbk=UCFIu-dqHl7OT7XitERtAcjXlUSc_aXvcDRg2KgrPn8&headerType=none&fp=chrome&spx=%2F3e401cc35422d65&type=tcp&flow=xtls-rprx-vision&sni=www.aws.amazon.com&sid=d0#@mnproxyBot",
+      "source_id": 24124,
+      "protocol": "vless",
+      "quality_score": 63.5,
+      "delivery_score": 78.45,
+      "latency": 708.94,
+      "ping_avg_ms": 661.68,
+      "download_mbps": 4.23,
+      "upload_mbps": 0.83,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 4.23,
+      "health_median_download_mbps": 4.23,
+      "server": "91.107.182.113",
+      "port": "40350",
+      "network_type": "tcp",
+      "security": "reality"
+    },
     {
       "config_text": "vless://784974f6-6289-4988-a51d-7d54f9e6915c@91.209.71.82:8443?encryption=none&security=reality&sni=www.yahoo.com&fp=chrome&pbk=7gxn8PNz075RJAh5IoBroZMdAu7OL_qTSK90-xsAFgw&sid=2aa8f922d6b8f2&spx=%2FRWewVK6AZPMKxEt&allowinsecure=0&type=xhttp&mode=auto&path=%2F&extra=%7B%22mode%22%3A%22auto%22%2C%22xPaddingBytes%22%3A%22100-1000%22%7D#@mnproxyBot",
       "source_id": 24138,
@@ -220,6 +239,25 @@
       "security": "none"
     },
     {
+      "config_text": "vless://0b9bcbc1-b289-4a64-86fa-a5b731b65384@185.155.97.241:443?security=reality&encryption=none&pbk=SJkDT_L0eziQR2afDGrkN7-uRxjYu6bZxIGXlKeCvX4&host=v2rayNplus-v2rayNplus-v2rayNplus&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=web.max.ru&sid=15aa18f971da1f81#@mnproxyBot",
+      "source_id": 24133,
+      "protocol": "vless",
+      "quality_score": 41.5,
+      "delivery_score": 37.39,
+      "latency": 1906.84,
+      "ping_avg_ms": 1635.97,
+      "download_mbps": 2.65,
+      "upload_mbps": 0.53,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 2.65,
+      "health_median_download_mbps": 2.65,
+      "server": "185.155.97.241",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
       "config_text": "vless://ecad47b0-249e-4f6f-adff-e3c8f02b1897@185.231.101.89:443?security=reality&encryption=none&pbk=10rVZPoOUP1TlQviIAsQ_jAROX0fRQxH0C92nq_zGQc&headerType=none&type=tcp&flow=xtls-rprx-vision&sni=se.quattro-tech.ru&sid=43dcff53849b81e6#@mnproxyBot",
       "source_id": 24418,
       "protocol": "vless",
@@ -273,25 +311,6 @@
       "health_median_download_mbps": 1.87,
       "server": "new.akinamo.willbe.sinitk.outforyou.ir",
       "port": "20580",
-      "network_type": "tcp",
-      "security": "reality"
-    },
-    {
-      "config_text": "vless://0b9bcbc1-b289-4a64-86fa-a5b731b65384@185.155.97.241:443?security=reality&encryption=none&pbk=SJkDT_L0eziQR2afDGrkN7-uRxjYu6bZxIGXlKeCvX4&host=v2rayNplus-v2rayNplus-v2rayNplus&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=web.max.ru&sid=15aa18f971da1f81#@mnproxyBot",
-      "source_id": 24133,
-      "protocol": "vless",
-      "quality_score": 41.5,
-      "delivery_score": 36.95,
-      "latency": 1906.84,
-      "ping_avg_ms": 1635.97,
-      "download_mbps": 2.43,
-      "upload_mbps": 0.53,
-      "download_source": "config_quality",
-      "health_status": "unknown",
-      "health_avg_download_mbps": 0.0,
-      "health_median_download_mbps": 0.0,
-      "server": "185.155.97.241",
-      "port": "443",
       "network_type": "tcp",
       "security": "reality"
     },
