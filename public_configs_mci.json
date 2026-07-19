@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-19T13:33:37.838443Z",
+  "generated_at": "2026-07-19T13:43:47.806359Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "mci",
   "hot_count": 5,
-  "reserve_count": 18,
+  "reserve_count": 17,
   "pool_hot_rows": 5,
-  "pool_reserve_rows": 18,
+  "pool_reserve_rows": 17,
   "hot": [
     {
       "config_text": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.34:8080#@mnproxyBot",
@@ -220,25 +220,6 @@
       "security": "tls"
     },
     {
-      "config_text": "vless://8a7626b6-9c7e-0f65-61c9-ddceec5af97a@x4g-production-cfbb.up.railway.app:443?path=%2Fws%2F8a7626b6-9c7e-0f65-61c9-ddceec5af97a&security=tls&alpn=http%2F1.1&encryption=none&insecure=0&host=&fp=chrome&type=ws&allowInsecure=0&sni=#@mnproxyBot",
-      "source_id": 28418,
-      "protocol": "vless",
-      "quality_score": 43.5,
-      "delivery_score": 44.41,
-      "latency": 2022.76,
-      "ping_avg_ms": 1189.74,
-      "download_mbps": 2.31,
-      "upload_mbps": 0.43,
-      "download_source": "pool_health_median",
-      "health_status": "healthy",
-      "health_avg_download_mbps": 2.31,
-      "health_median_download_mbps": 2.31,
-      "server": "x4g-production-cfbb.up.railway.app",
-      "port": "443",
-      "network_type": "ws",
-      "security": "tls"
-    },
-    {
       "config_text": "vless://4e843ed6-09e7-4be5-bd52-a1dc46568aeb@2.26.71.73:443?type=tcp&security=reality&flow=xtls-rprx-vision&encryption=none&sni=www.cloudflare.com&pbk=YkcQyTOh9YpZmilRob-eVxwoo4uwBAa9oHmURMTFzEM&sid=2b8c5e91&fp=chrome#@mnproxyBot",
       "source_id": 28523,
       "protocol": "vless",
@@ -275,6 +256,25 @@
       "port": "443",
       "network_type": "tcp",
       "security": "reality"
+    },
+    {
+      "config_text": "vless://e4514801-0d5a-42ba-869f-39bd605aef9e@18.194.222.164:22222?encryption=none&security=none&type=tcp&headerType=none#@mnproxyBot",
+      "source_id": 28086,
+      "protocol": "vless",
+      "quality_score": 69.5,
+      "delivery_score": 86.53,
+      "latency": 473.92,
+      "ping_avg_ms": 464.32,
+      "download_mbps": 1.82,
+      "upload_mbps": 1.13,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 1.82,
+      "health_median_download_mbps": 1.82,
+      "server": "18.194.222.164",
+      "port": "22222",
+      "network_type": "tcp",
+      "security": "none"
     },
     {
       "config_text": "trojan://-------BanV2ray------@edededededededededededede-66.poki-pakipon.ir:23780?fp=chrome&sni=chi.yahoo.com&type=grpc&pbk=bJrhMKdMfPjEZ-EUazGR6h-uUDWAFxXG1MZlUVsd3Ak&security=reality&mode=gun&spx=%2F#@mnproxyBot",
@@ -334,25 +334,6 @@
       "security": "reality"
     },
     {
-      "config_text": "vless://e4514801-0d5a-42ba-869f-39bd605aef9e@18.194.222.164:22224?encryption=none&security=none&type=tcp#@mnproxyBot",
-      "source_id": 28271,
-      "protocol": "vless",
-      "quality_score": 72.5,
-      "delivery_score": 94.79,
-      "latency": 503.05,
-      "ping_avg_ms": 418.85,
-      "download_mbps": 3.67,
-      "upload_mbps": 1.65,
-      "download_source": "config_quality",
-      "health_status": "suspect",
-      "health_avg_download_mbps": 0.0,
-      "health_median_download_mbps": 0.0,
-      "server": "18.194.222.164",
-      "port": "22224",
-      "network_type": "tcp",
-      "security": "none"
-    },
-    {
       "config_text": "trojan://-------BanV2ray------@edededededededededededede-66.poki-pakipon.ir:36268?mode=gun&security=reality&pbk=bJrhMKdMfPjEZ-EUazGR6h-uUDWAFxXG1MZlUVsd3Ak&fp=firefox&spx=%2F&type=grpc&sni=chi.yahoo.com#@mnproxyBot",
       "source_id": 27661,
       "protocol": "trojan",
@@ -370,25 +351,6 @@
       "port": "36268",
       "network_type": "grpc",
       "security": "reality"
-    },
-    {
-      "config_text": "vless://e4514801-0d5a-42ba-869f-39bd605aef9e@18.194.222.164:22222?encryption=none&security=none&type=tcp&headerType=none#@mnproxyBot",
-      "source_id": 28086,
-      "protocol": "vless",
-      "quality_score": 69.5,
-      "delivery_score": 89.85,
-      "latency": 473.92,
-      "ping_avg_ms": 464.32,
-      "download_mbps": 3.48,
-      "upload_mbps": 1.13,
-      "download_source": "config_quality",
-      "health_status": "suspect",
-      "health_avg_download_mbps": 0.0,
-      "health_median_download_mbps": 0.0,
-      "server": "18.194.222.164",
-      "port": "22222",
-      "network_type": "tcp",
-      "security": "none"
     },
     {
       "config_text": "trojan://-----BanV2ray----@edededededededededededede-66.poki-pakipon.ir:16267?mode=gun&security=reality&pbk=bJrhMKdMfPjEZ-EUazGR6h-uUDWAFxXG1MZlUVsd3Ak&fp=firefox&spx=%2F&type=grpc&sni=chi.yahoo.com#@mnproxyBot",
@@ -446,6 +408,25 @@
       "port": "22222",
       "network_type": "tcp",
       "security": "none"
+    },
+    {
+      "config_text": "vless://8a7626b6-9c7e-0f65-61c9-ddceec5af97a@x4g-production-cfbb.up.railway.app:443?path=%2Fws%2F8a7626b6-9c7e-0f65-61c9-ddceec5af97a&security=tls&alpn=http%2F1.1&encryption=none&insecure=0&host=&fp=chrome&type=ws&allowInsecure=0&sni=#@mnproxyBot",
+      "source_id": 28418,
+      "protocol": "vless",
+      "quality_score": 43.5,
+      "delivery_score": 44.53,
+      "latency": 2022.76,
+      "ping_avg_ms": 1189.74,
+      "download_mbps": 2.37,
+      "upload_mbps": 0.43,
+      "download_source": "config_quality",
+      "health_status": "suspect",
+      "health_avg_download_mbps": 0.0,
+      "health_median_download_mbps": 0.0,
+      "server": "x4g-production-cfbb.up.railway.app",
+      "port": "443",
+      "network_type": "ws",
+      "security": "tls"
     }
   ],
   "configs": [
