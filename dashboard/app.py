@@ -840,9 +840,9 @@ st.caption(
 )
 
 st.caption(
-    f"Snapshot source: {MCI_SNAPSHOT_PATH}"
+    "Snapshot source: "
+    f"`{MCI_SNAPSHOT_PATH}`"
 )
-
 mci_snapshot_freshness, mci_snapshot_age_minutes = (
     classify_freshness(
         mci_snapshot["generated_at"]
@@ -1566,4 +1566,3 @@ if not database_summaries[
     st.error(
         "The Irancell database could not be read."
     )
-
