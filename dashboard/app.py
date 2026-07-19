@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,16 +16,25 @@ from runtime_metrics import read_runtime_summary
 from sqlite_metrics import read_database_summary
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DASHBOARD_ROOT = Path(
+    __file__
+).resolve().parents[1]
+
+RUNTIME_ROOT = Path(
+    os.environ.get(
+        "V2RAY_RUNTIME_ROOT",
+        str(DASHBOARD_ROOT),
+    )
+).expanduser().resolve()
 
 PUBLIC_EXPORTS = {
-    "Irancell / Default": PROJECT_ROOT / "public_configs.json",
-    "MCI": PROJECT_ROOT / "public_configs_mci.json",
+    "Irancell / Default": RUNTIME_ROOT / "public_configs.json",
+    "MCI": RUNTIME_ROOT / "public_configs_mci.json",
 }
 
 LOCAL_DATABASES = {
-    "Irancell / Default": PROJECT_ROOT / "configs.db",
-    "MCI": PROJECT_ROOT / "configs_mci.db",
+    "Irancell / Default": RUNTIME_ROOT / "configs.db",
+    "MCI": RUNTIME_ROOT / "configs_mci.db",
 }
 
 FRESH_MAX_MINUTES = 30
@@ -652,7 +662,7 @@ database_summaries = {
 
 process_summary = read_process_summary()
 runtime_summary = read_runtime_summary(
-    PROJECT_ROOT
+    RUNTIME_ROOT
 )
  
 default_summary = export_summaries["Irancell / Default"]
@@ -810,6 +820,9 @@ else:
     )
 
 st.subheader("Worker runtime activity")
+st.caption(
+    f"Runtime data source: {RUNTIME_ROOT}"
+)
 
 runtime_metric_columns = st.columns(3)
 
