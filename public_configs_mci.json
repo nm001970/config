@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-19T20:39:43.181205Z",
+  "generated_at": "2026-07-19T21:00:07.410359Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "mci",
   "hot_count": 5,
-  "reserve_count": 7,
+  "reserve_count": 6,
   "pool_hot_rows": 5,
-  "pool_reserve_rows": 7,
+  "pool_reserve_rows": 6,
   "hot": [
     {
       "config_text": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.34:8080#@mnproxyBot",
@@ -180,25 +180,6 @@
       "port": "22222",
       "network_type": "tcp",
       "security": "none"
-    },
-    {
-      "config_text": "trojan://-------BanV2ray------@edededededededededededede-66.poki-pakipon.ir:23780?fp=chrome&mode=gun&sni=chi.yahoo.com&spx=%2F&pbk=bJrhMKdMfPjEZ-EUazGR6h-uUDWAFxXG1MZlUVsd3Ak&type=grpc&security=reality#@mnproxyBot",
-      "source_id": 27144,
-      "protocol": "trojan",
-      "quality_score": 64.5,
-      "delivery_score": 71.01,
-      "latency": 1049.93,
-      "ping_avg_ms": 661.1,
-      "download_mbps": 3.21,
-      "upload_mbps": 1.03,
-      "download_source": "config_quality",
-      "health_status": "suspect",
-      "health_avg_download_mbps": 0.0,
-      "health_median_download_mbps": 0.0,
-      "server": "edededededededededededede-66.poki-pakipon.ir",
-      "port": "23780",
-      "network_type": "grpc",
-      "security": "reality"
     },
     {
       "config_text": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNToySkR1Sm1XZkpxbDVaWE9CZWJoTFFzYk1GczVpSGZveQ@turkey.mrapanel.shop:1080#@mnproxyBot",
