@@ -8,9 +8,7 @@ from typing import Any
 
 import streamlit as st
 
-from sqlite_metrics import read_database_summary
-from process_metrics import read_process_summary
-from sqlite_metrics import read_database_summary
+from operator_snapshot import read_operator_snapshot
 from process_metrics import read_process_summary
 from runtime_metrics import read_runtime_summary
 from sqlite_metrics import read_database_summary
@@ -34,8 +32,14 @@ PUBLIC_EXPORTS = {
 
 LOCAL_DATABASES = {
     "Irancell / Default": RUNTIME_ROOT / "configs.db",
-    "MCI": RUNTIME_ROOT / "configs_mci.db",
 }
+
+MCI_SNAPSHOT_PATH = (
+    RUNTIME_ROOT
+    / ".runtime"
+    / "dashboard"
+    / "dashboard_metrics_mci.json"
+)
 
 FRESH_MAX_MINUTES = 30
 STALE_MINUTES = 120
@@ -664,11 +668,19 @@ process_summary = read_process_summary()
 runtime_summary = read_runtime_summary(
     RUNTIME_ROOT
 )
+
+mci_snapshot = read_operator_snapshot(
+    MCI_SNAPSHOT_PATH,
+    expected_operator="mci",
+)
  
 default_summary = export_summaries["Irancell / Default"]
 mci_summary = export_summaries["MCI"]
 default_database_summary = database_summaries[
     "Irancell / Default"
+]
+mci_database_summary = mci_snapshot[
+    "database"
 ]
 
 metric_columns = st.columns(4)
@@ -818,6 +830,247 @@ else:
             or "Unknown process query error."
         )
     )
+
+
+st.subheader("MCI database metrics")
+
+st.caption(
+    "MCI metrics are received as a sanitized JSON "
+    "snapshot from the separate MCI laptop."
+)
+
+st.caption(
+    f"Snapshot source: {MCI_SNAPSHOT_PATH}"
+)
+
+mci_snapshot_freshness, mci_snapshot_age_minutes = (
+    classify_freshness(
+        mci_snapshot["generated_at"]
+    )
+)
+
+mci_snapshot_columns = st.columns(5)
+
+mci_snapshot_columns[0].metric(
+    "Snapshot status",
+    (
+        "Valid"
+        if mci_snapshot["valid"]
+        else "Missing / Invalid"
+    ),
+)
+
+mci_snapshot_columns[1].metric(
+    "Freshness",
+    mci_snapshot_freshness,
+)
+
+mci_snapshot_columns[2].metric(
+    "Age",
+    format_age(
+        mci_snapshot_age_minutes
+    ),
+)
+
+mci_snapshot_columns[3].metric(
+    "Total configs",
+    mci_database_summary[
+        "total_configs"
+    ],
+)
+
+mci_snapshot_columns[4].metric(
+    "Source",
+    mci_snapshot["source_id"] or "-",
+)
+
+if not mci_snapshot["exists"]:
+    st.info(
+        "The MCI dashboard snapshot has not reached "
+        "the central runtime yet."
+    )
+
+elif not mci_snapshot["valid"]:
+    st.error(
+        "The MCI dashboard snapshot is invalid: "
+        + (
+            mci_snapshot["error"]
+            or "Unknown validation error."
+        )
+    )
+
+elif not mci_database_summary["readable"]:
+    st.error(
+        "The MCI snapshot is valid, but its database "
+        "summary is marked as unreadable."
+    )
+
+else:
+    mci_status_counts = mci_database_summary[
+        "status_counts"
+    ]
+
+    mci_quality_counts = mci_database_summary[
+        "quality_status_counts"
+    ]
+
+    mci_pool_counts = mci_database_summary[
+        "pool_status_counts"
+    ]
+
+    mci_metric_columns = st.columns(5)
+
+    mci_metric_columns[0].metric(
+        "Alive",
+        mci_status_counts.get(
+            "alive",
+            0,
+        ),
+    )
+
+    mci_metric_columns[1].metric(
+        "Qualified",
+        mci_quality_counts.get(
+            "qualified",
+            0,
+        ),
+    )
+
+    mci_metric_columns[2].metric(
+        "Hot",
+        mci_pool_counts.get(
+            "hot",
+            0,
+        ),
+    )
+
+    mci_metric_columns[3].metric(
+        "Reserve",
+        mci_pool_counts.get(
+            "reserve",
+            0,
+        ),
+    )
+
+    mci_metric_columns[4].metric(
+        "Quarantined",
+        mci_pool_counts.get(
+            "quarantined",
+            0,
+        ),
+    )
+
+    mci_count_tables = st.columns(3)
+
+    with mci_count_tables[0]:
+        st.markdown("#### Status")
+
+        st.dataframe(
+            [
+                {
+                    "Status": key,
+                    "Count": count,
+                }
+                for key, count
+                in sorted(
+                    mci_status_counts.items()
+                )
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+
+    with mci_count_tables[1]:
+        st.markdown("#### Quality")
+
+        st.dataframe(
+            [
+                {
+                    "Quality status": key,
+                    "Count": count,
+                }
+                for key, count
+                in sorted(
+                    mci_quality_counts.items()
+                )
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+
+    with mci_count_tables[2]:
+        st.markdown("#### Pool")
+
+        st.dataframe(
+            [
+                {
+                    "Pool status": key,
+                    "Count": count,
+                }
+                for key, count
+                in sorted(
+                    mci_pool_counts.items()
+                )
+            ],
+            width="stretch",
+            hide_index=True,
+        )
+
+    st.markdown("#### Recent MCI checks")
+
+    mci_connectivity_tab, mci_quality_tab = (
+        st.tabs(
+            [
+                "Connectivity checks",
+                "Quality checks",
+            ]
+        )
+    )
+
+    with mci_connectivity_tab:
+        mci_connectivity_rows = (
+            mci_database_summary.get(
+                "recent_connectivity_checks",
+                [],
+            )
+        )
+
+        if mci_connectivity_rows:
+            st.dataframe(
+                build_recent_connectivity_rows(
+                    mci_connectivity_rows
+                ),
+                width="stretch",
+                hide_index=True,
+            )
+        else:
+            st.info(
+                "No recent MCI connectivity "
+                "checks are available."
+            )
+
+    with mci_quality_tab:
+        mci_quality_rows = (
+            mci_database_summary.get(
+                "recent_quality_checks",
+                [],
+            )
+        )
+
+        if mci_quality_rows:
+            st.dataframe(
+                build_recent_quality_rows(
+                    mci_quality_rows
+                ),
+                width="stretch",
+                hide_index=True,
+            )
+        else:
+            st.info(
+                "No recent MCI quality checks "
+                "are available."
+            )
+
 
 st.subheader("Worker runtime activity")
 st.caption(
@@ -1314,13 +1567,3 @@ if not database_summaries[
         "The Irancell database could not be read."
     )
 
-if not database_summaries["MCI"]["exists"]:
-    st.info(
-        "The MCI database is not present on this machine. "
-        "This is expected while MCI processing remains "
-        "on the separate laptop."
-    )
-elif not database_summaries["MCI"]["readable"]:
-    st.error(
-        "The MCI database exists but could not be read."
-    )
