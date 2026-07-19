@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import os
 import json
@@ -637,14 +637,14 @@ def build_freshness_rows(
 
 st.set_page_config(
     page_title="MPROXY Admin",
-    page_icon="📡",
+    page_icon="ðŸ“¡",
     layout="wide",
 )
 
 st.title("MPROXY Admin Dashboard")
 
 st.caption(
-    "Read-only local monitoring — no database writes, "
+    "Read-only local monitoring â€” no database writes, "
     "worker execution, publishing, or Railway changes."
 )
 
@@ -697,7 +697,7 @@ st.subheader("Public delivery artifacts")
 
 st.dataframe(
     build_export_rows(export_summaries),
-    use_container_width=True,
+    width="stretch",
 )
 
 st.subheader("Irancell database metrics")
@@ -764,7 +764,7 @@ if process_summary["query_ok"]:
 
     st.dataframe(
         build_worker_rows(process_summary),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -806,7 +806,7 @@ if process_summary["query_ok"]:
 
         st.dataframe(
             process_summary["legacy_processes"],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
 
@@ -843,7 +843,7 @@ runtime_metric_columns[2].metric(
 
 st.dataframe(
     build_runtime_rows(runtime_summary),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -972,14 +972,14 @@ freshness_rows = build_freshness_rows(
 )
 
 st.caption(
-    f"Fresh: up to {FRESH_MAX_MINUTES} minutes — "
-    f"Delayed: up to {STALE_MINUTES} minutes — "
+    f"Fresh: up to {FRESH_MAX_MINUTES} minutes â€” "
+    f"Delayed: up to {STALE_MINUTES} minutes â€” "
     "Stale: older than that."
 )
 
 st.dataframe(
     freshness_rows,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
@@ -1088,12 +1088,12 @@ with distribution_columns[0]:
         ),
         x="Category",
         y="Count",
-        use_container_width=True,
+        width="stretch",
     )
 
     st.dataframe(
         build_count_rows(status_counts),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1106,12 +1106,12 @@ with distribution_columns[1]:
         ),
         x="Category",
         y="Count",
-        use_container_width=True,
+        width="stretch",
     )
 
     st.dataframe(
         build_count_rows(protocol_counts),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1124,14 +1124,14 @@ with distribution_columns[2]:
         ),
         x="Category",
         y="Count",
-        use_container_width=True,
+        width="stretch",
     )
 
     st.dataframe(
         build_count_rows(
             quality_status_counts
         ),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1170,7 +1170,7 @@ with connectivity_tab:
             build_recent_connectivity_rows(
                 recent_connectivity_checks
             ),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
     else:
@@ -1185,7 +1185,7 @@ with quality_tab:
             build_recent_quality_rows(
                 recent_quality_checks
             ),
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
     else:
@@ -1246,7 +1246,7 @@ with pool_table_columns[0]:
 
     st.dataframe(
         build_count_rows(pool_status_counts),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1255,7 +1255,7 @@ with pool_table_columns[1]:
 
     st.dataframe(
         build_count_rows(pool_gate_counts),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1264,7 +1264,7 @@ with pool_table_columns[2]:
 
     st.dataframe(
         build_count_rows(pool_health_counts),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -1288,7 +1288,7 @@ st.subheader("Local configuration databases")
 
 st.dataframe(
     build_database_rows(database_summaries),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
 )
 
