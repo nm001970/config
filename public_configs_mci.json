@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-19T17:01:49.842175Z",
+  "generated_at": "2026-07-19T17:11:59.979189Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "mci",
   "hot_count": 5,
-  "reserve_count": 15,
+  "reserve_count": 16,
   "pool_hot_rows": 5,
-  "pool_reserve_rows": 15,
+  "pool_reserve_rows": 16,
   "hot": [
     {
       "config_text": "ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpvWklvQTY5UTh5aGNRVjhrYTNQYTNB@82.38.31.34:8080#@mnproxyBot",
@@ -389,6 +389,25 @@
       "port": "443",
       "network_type": "tcp",
       "security": "reality"
+    },
+    {
+      "config_text": "vmess://eyJhZGQiOiIyMDkuMjUwLjIzNy43MSIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0IjoiIiwiaWQiOiIzOTlmN2YxYi0wZjVlLTQzYTEtYjBiNS02ZjI1NTM2N2Q3NzgiLCJpbnNlY3VyZSI6IjAiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiIiwicGNzIjoiIiwicG9ydCI6IjQ4ODI0IiwicHMiOiJAbW5wcm94eUJvdCIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIiwidmNuIjoiIn0=",
+      "source_id": 29129,
+      "protocol": "vmess",
+      "quality_score": 45.5,
+      "delivery_score": 48.73,
+      "latency": 2239.49,
+      "ping_avg_ms": 961.62,
+      "download_mbps": 2.84,
+      "upload_mbps": 0.85,
+      "download_source": "config_quality",
+      "health_status": "suspect",
+      "health_avg_download_mbps": 0.0,
+      "health_median_download_mbps": 0.0,
+      "server": "209.250.237.71",
+      "port": "48824",
+      "network_type": "tcp",
+      "security": "none"
     }
   ],
   "configs": [
