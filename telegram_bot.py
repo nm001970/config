@@ -113,20 +113,32 @@ def get_or_create_user_from_callback(callback: CallbackQuery):
 async def start_handler(message: Message):
     user = get_or_create_user_from_message(message)
 
-    if user["creat_at"]:
+    if user.get("trial_was_activated"):
         text = (
             "🚀 به M Proxy خوش آمدید.\n\n"
             f"اشتراک رایگان {FREE_TRIAL_DAYS} روزه شما فعال شد.\n\n"
             "برای دریافت لینک اشتراک V2RayN، روی دکمه زیر بزنید.\n\n"
             "برای استفاده از این سرویس نیازی به ارسال شماره تلفن نیست."
         )
-    else:
-        subscription_end = format_jalali_datetime(user['subscription_end'])
+    elif user["is_active"]:
+        subscription_end = format_jalali_datetime(
+            user["subscription_end"]
+        )
         text = (
             "🚀 خوش برگشتی.\n\n"
-            f"اشتراک شما تا این تاریخ فعال است:\n"
+            "اشتراک شما تا این تاریخ فعال است:\n"
             f"{subscription_end}\n\n"
             "از منوی زیر ادامه دهید."
+        )
+    else:
+        subscription_end = format_jalali_datetime(
+            user["subscription_end"]
+        )
+        text = (
+            "🚀 خوش برگشتی.\n\n"
+            "اشتراک شما در این تاریخ به پایان رسیده است:\n"
+            f"{subscription_end}\n\n"
+            "برای ادامه استفاده، از گزینه «💳 تمدید اشتراک» استفاده کنید."
         )
 
     await message.answer(
@@ -228,7 +240,7 @@ async def status_handler(message: Message):
     else:
         text = (
             "وضعیت اشتراک:\n\n"
-            "اشتراک شما تمام شده است.\n\n",
+            "اشتراک شما تمام شده است.\n\n"
         )
 
     await message.answer(
@@ -254,7 +266,7 @@ async def status_callback(callback: CallbackQuery):
     else:
         text = (
             "وضعیت اشتراک:\n\n"
-            "اشتراک شما تمام شده است.\n\n",
+            "اشتراک شما تمام شده است.\n\n"
         )
 
     await callback.message.edit_text(
@@ -375,50 +387,27 @@ async def manual_configs_operator_callback(callback: CallbackQuery):
             parse_mode="HTML"
         )
 
-@dp.message(Command("privacy"))
-async def privacy_handler(message: Message):
-    await message.answer(
-        "حریم خصوصی:\n\n"
-        "- برای استفاده از این سرویس نیازی به شماره تلفن نیست.\n"
-        "- Bot شماره تلفن، لوکیشن یا contact درخواست نمی‌کند.\n"
-        "- Bot فقط شناسه تلگرام و وضعیت اشتراک را برای مدیریت دسترسی نگه می‌دارد.\n"
-        "- لینک اشتراک اختصاصی شما فقط برای دریافت کانفیگ‌های به‌روز استفاده می‌شود.\n\n"
-        "نکته: لطفاً لینک اشتراک خود را برای دیگران ارسال نکنید.",
-        reply_markup=main_menu_keyboard()
-    )
-
-
-@dp.callback_query(F.data == "menu:privacy")
-async def privacy_callback(callback: CallbackQuery):
-    await callback.answer()
-
-    await callback.message.edit_text(
-        "حریم خصوصی:\n\n"
-        "- برای استفاده از این سرویس نیازی به شماره تلفن نیست.\n"
-        "- Bot شماره تلفن، لوکیشن یا contact درخواست نمی‌کند.\n"
-        "- Bot فقط شناسه تلگرام و وضعیت اشتراک را برای مدیریت دسترسی نگه می‌دارد.\n"
-        "- لینک اشتراک اختصاصی شما فقط برای دریافت کانفیگ‌های به‌روز استفاده می‌شود.\n\n"
-        "نکته: لطفاً لینک اشتراک خود را برای دیگران ارسال نکنید.",
-        reply_markup=back_to_menu_keyboard()
-    )
-
-
 @dp.message(Command("help"))
 async def help_handler(message: Message):
-    await message.answer(
+    text = (
         "📘 راهنما:\n\n"
-        "۱. برای دریافت لینک، روی «دریافت لینک اشتراک» بزنید.\n"
+        "۱. روی «دریافت لینک اشتراک» بزنید.\n"
         "۲. اپراتور موردنظر را انتخاب کنید.\n"
         "۳. لینک را در V2RayN اضافه کنید.\n"
-        "۴.لینک اشتراک را هر چند ساعت یک‌بار Update کنید تا جدیدترین سرورها را دریافت کنید."
-        "اگر V2RayN بدون اتصال اولیه لینک را Update نکرد، ابتدا با یک اتصال موقت وصل شوید و سپس Subscription را Update کنید."
+        "۴. لینک اشتراک را هر چند ساعت یک‌بار Update کنید "
+        "تا جدیدترین سرورها دریافت شوند.\n\n"
+        "اگر V2RayN بدون اتصال اولیه لینک را Update نکرد، "
+        "ابتدا با یک اتصال موقت وصل شوید و سپس "
+        "Subscription را Update کنید.\n\n"
         "دستورهای متنی:\n\n"
         "/start - نمایش منوی اصلی\n"
         "/sub - دریافت لینک اشتراک\n"
-        "/configs - دریافت کانفیگ دستی\n"
         "/status - وضعیت اشتراک\n"
-        "/privacy - توضیح حریم خصوصی\n"
-        "/help - راهنما",
+        "/help - راهنما"
+    )
+
+    await message.answer(
+        text,
         reply_markup=main_menu_keyboard()
     )
 
@@ -426,26 +415,27 @@ async def help_handler(message: Message):
 async def help_callback(callback: CallbackQuery):
     await callback.answer()
 
-    await callback.message.edit_text(
+    text = (
         "📘 راهنما:\n\n"
-        "۱. برای دریافت لینک، روی «دریافت لینک اشتراک» بزنید.\n"
+        "۱. روی «دریافت لینک اشتراک» بزنید.\n"
         "۲. اپراتور موردنظر را انتخاب کنید.\n"
         "۳. لینک را در V2RayN اضافه کنید.\n"
-        "۴. لینک اشتراک را هر چند ساعت یک‌بار Update کنید تا جدیدترین سرورها را دریافت کنید."
-        "اگر V2RayN بدون اتصال اولیه لینک را Update نکرد، ابتدا با یک اتصال موقت وصل شوید و سپس Subscription را Update کنید."
+        "۴. لینک اشتراک را هر چند ساعت یک‌بار Update کنید "
+        "تا جدیدترین سرورها دریافت شوند.\n\n"
+        "اگر V2RayN بدون اتصال اولیه لینک را Update نکرد، "
+        "ابتدا با یک اتصال موقت وصل شوید و سپس "
+        "Subscription را Update کنید.\n\n"
         "دستورهای متنی:\n\n"
         "/start - نمایش منوی اصلی\n"
         "/sub - دریافت لینک اشتراک\n"
-        "/configs - دریافت کانفیگ دستی\n"
         "/status - وضعیت اشتراک\n"
-        "/privacy - توضیح حریم خصوصی\n"
-        "/help - راهنما",
-        reply_markup=back_to_menu_keyboard()
+        "/help - راهنما"
     )
 
-
-
-
+    await callback.message.edit_text(
+        text,
+        reply_markup=back_to_menu_keyboard()
+    )
 
 @dp.message(F.contact)
 async def contact_handler(message: Message):
@@ -463,19 +453,22 @@ async def renew_subscription_callback(callback: CallbackQuery):
     user = get_or_create_user_from_callback(callback)
 
     telegram_id = user["telegram_id"]
-    username = user.get("username")
+
+    if ENABLE_MANUAL_CONFIGS:
+        delivery_text = (
+            "بعد از تمدید دوباره از منو لینک اشتراک "
+            "یا کانفیگ دستی را دریافت کنید."
+        )
+    else:
+        delivery_text = (
+            "بعد از تمدید دوباره از منو لینک اشتراک را دریافت کنید."
+        )
 
     text = (
         "💳 تمدید اشتراک\n\n"
         "برای تمدید، شناسه تلگرام زیر را برای پشتیبانی ارسال کنید:\n\n"
         f"<code>{telegram_id}</code>\n\n"
-    )
-
-    if username:
-        text += f"Username: @{escape(username)}\n\n"
-
-    text += (
-        "بعد از تمدید دوباره از منو لینک اشتراک یا کانفیگ دستی را دریافت کنید."
+        f"{delivery_text}"
     )
 
     await callback.message.edit_text(
@@ -499,15 +492,22 @@ async def setup_bot_commands(bot: Bot):
             command="status",
             description="وضعیت اشتراک"
         ),
-        BotCommand(
-            command="privacy",
-            description="حریم خصوصی"
-        ),
+    ]
+
+    if ENABLE_MANUAL_CONFIGS:
+        commands.append(
+            BotCommand(
+                command="configs",
+                description="دریافت کانفیگ دستی"
+            )
+        )
+
+    commands.append(
         BotCommand(
             command="help",
             description="راهنما"
-        ),
-    ]
+        )
+    )
 
     await bot.set_my_commands(commands)
 

@@ -40,10 +40,6 @@ def main_menu_keyboard():
                 InlineKeyboardButton(
                     text="📊 وضعیت اشتراک",
                     callback_data="menu:status"
-                ),
-                InlineKeyboardButton(
-                    text="🛡️ حریم خصوصی",
-                    callback_data="menu:privacy"
                 )
             ],
             [

@@ -147,6 +147,8 @@ def get_or_create_user(
         now = datetime.utcnow()
 
         if user:
+            trial_was_activated = False
+
             update_user_profile(
                 user=user,
                 telegram_id=telegram_id,
@@ -159,18 +161,27 @@ def get_or_create_user(
             )
 
             if not user.subscription_token:
-                user.subscription_token = create_unique_subscription_token(session)
+                user.subscription_token = create_unique_subscription_token(
+                    session
+                )
 
             if not user.subscription_start:
                 user.subscription_start = now
 
             if not user.subscription_end:
-                user.subscription_end = now + timedelta(days=FREE_TRIAL_DAYS)
+                user.subscription_end = now + timedelta(
+                    days=FREE_TRIAL_DAYS
+                )
+                trial_was_activated = True
 
             session.commit()
             session.refresh(user)
 
-            return user_to_dict(user)
+            result = user_to_dict(user)
+            result["was_created"] = False
+            result["trial_was_activated"] = trial_was_activated
+
+            return result
 
         user = BotUser(
             telegram_id=telegram_id,
@@ -197,7 +208,11 @@ def get_or_create_user(
         session.commit()
         session.refresh(user)
 
-        return user_to_dict(user)
+        result = user_to_dict(user)
+        result["was_created"] = True
+        result["trial_was_activated"] = True
+
+        return result
 
     except Exception:
         session.rollback()

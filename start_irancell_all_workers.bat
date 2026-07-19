@@ -8,11 +8,12 @@ set "RESERVE_RUNNER=%PROJECT_DIR%\run_v2_reserve_health_irancell.bat"
 set "HOT_RUNNER=%PROJECT_DIR%\run_v2_hot_manager_irancell.bat"
 set "UPDATE_RUNNER=%PROJECT_DIR%\run_config_update_irancell.bat"
 set "PUBLISH_RUNNER=%PROJECT_DIR%\run_export_publish_irancell.bat"
+set "MCI_PUBLISHER_LOOP_RUNNER=%PROJECT_DIR%\run_publish_received_mci_loop.bat"
 
 cd /d "%PROJECT_DIR%"
 
 echo ============================================================
-echo MN PROXY - START ALL IRANCELL WORKERS
+echo MN PROXY - START ALL IRANCELL WORKERS + MCI PUBLISHER
 echo PROJECT: %PROJECT_DIR%
 echo ============================================================
 
@@ -43,6 +44,12 @@ if not exist "%UPDATE_RUNNER%" (
 if not exist "%PUBLISH_RUNNER%" (
     echo ERROR: Missing runner:
     echo %PUBLISH_RUNNER%
+    exit /b 1
+)
+
+if not exist "%MCI_PUBLISHER_LOOP_RUNNER%" (
+    echo ERROR: Missing runner:
+    echo %MCI_PUBLISHER_LOOP_RUNNER%
     exit /b 1
 )
 
@@ -123,20 +130,33 @@ if errorlevel 1 (
     echo Terminal E is already running. Skipped.
 )
 
+rem ============================================================
+rem Terminal F - MCI Central Publisher
+rem ============================================================
+
+powershell -NoProfile -Command "$running = @(Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and $_.CommandLine -match 'run_publish_received_mci_loop\.bat' }); if ($running.Count -gt 0) { exit 0 } else { exit 1 }"
+
+if errorlevel 1 (
+    echo Starting Terminal F: MCI Central Publisher...
+    start "MN PROXY - F - MCI CENTRAL PUBLISHER" cmd /k call "%MCI_PUBLISHER_LOOP_RUNNER%"
+) else (
+    echo Terminal F is already running. Skipped.
+)
+
 echo.
 echo Waiting for worker terminals to initialize...
 timeout /t 5 /nobreak >nul
 
 echo.
 echo ============================================================
-echo CURRENT IRANCELL RUNNER WINDOWS
+echo CURRENT IRANCELL RUNNER WINDOWS AND MCI PUBLISHER
 echo ============================================================
 
-powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and $_.CommandLine -match 'run_v2_raw_to_reserve_irancell\.bat|run_v2_reserve_health_irancell\.bat|run_v2_hot_manager_irancell\.bat|run_config_update_irancell\.bat|run_export_publish_irancell\.bat' } | Select-Object ProcessId,Name,CommandLine | Format-Table -Wrap"
+powershell -NoProfile -Command "Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'cmd.exe' -and $_.CommandLine -match 'run_v2_raw_to_reserve_irancell\.bat|run_v2_reserve_health_irancell\.bat|run_v2_hot_manager_irancell\.bat|run_config_update_irancell\.bat|run_export_publish_irancell\.bat|run_publish_received_mci_loop\.bat' } | Select-Object ProcessId,Name,CommandLine | Format-Table -Wrap"
 
 echo.
 echo ============================================================
-echo ALL IRANCELL WORKERS STARTED
+echo ALL IRANCELL WORKERS AND MCI PUBLISHER STARTED
 echo ============================================================
 
 exit /b 0

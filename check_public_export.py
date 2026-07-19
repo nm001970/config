@@ -5,6 +5,9 @@ from collections import Counter
 
 
 PUBLIC_CONFIGS_FILE = os.getenv("PUBLIC_CONFIGS_FILE", "public_configs.json")
+import base64
+import binascii
+import urllib.parse
 EXPECTED_HOT_LIMIT = int(os.getenv("SUBSCRIPTION_CONFIG_LIMIT", "5"))
 
 BLOCKED_MARKERS = [
@@ -15,6 +18,53 @@ BLOCKED_MARKERS = [
 
 EXPECTED_REMARK = "@mnproxyBot"
 
+
+
+def decode_vmess_payload(config_text):
+    payload = config_text.split("://", 1)[1]
+    payload = payload.split("#", 1)[0].strip()
+    payload += "=" * (-len(payload) % 4)
+
+    decoded_bytes = base64.b64decode(
+        payload.encode("ascii"),
+        altchars=b"-_",
+        validate=False,
+    )
+
+    decoded = json.loads(
+        decoded_bytes.decode("utf-8-sig")
+    )
+
+    if not isinstance(decoded, dict):
+        raise ValueError(
+            "Decoded VMess payload must be a JSON object."
+        )
+
+    return decoded
+
+
+def has_expected_remark(config_text):
+    if config_text.startswith("vmess://"):
+        try:
+            vmess_data = decode_vmess_payload(config_text)
+        except (
+            ValueError,
+            UnicodeError,
+            json.JSONDecodeError,
+            binascii.Error,
+        ):
+            return False
+
+        return vmess_data.get("ps") == EXPECTED_REMARK
+
+    try:
+        fragment = urllib.parse.unquote(
+            urllib.parse.urlsplit(config_text).fragment
+        )
+    except ValueError:
+        return False
+
+    return fragment == EXPECTED_REMARK
 
 def fail(message):
     print(f"FAIL: {message}")
@@ -130,8 +180,11 @@ def check_configs(name, items, min_count=1):
         if not config_text.startswith(("vless://", "vmess://", "ss://", "trojan://")):
             fail(f"{name}[{index}] has unsupported URL prefix")
 
-        if f"#{EXPECTED_REMARK}" not in config_text:
-            fail(f"{name}[{index}] does not contain remark #{EXPECTED_REMARK}")
+        if not has_expected_remark(config_text):
+            fail(
+                f"{name}[{index}] does not contain expected remark "
+                f"{EXPECTED_REMARK}"
+            )
 
         texts.append(config_text)
 
