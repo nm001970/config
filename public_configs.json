@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-20T07:02:18.311967Z",
+  "generated_at": "2026-07-20T10:09:26.980903Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "irancell",
   "hot_count": 5,
   "reserve_count": 40,
   "pool_hot_rows": 5,
-  "pool_reserve_rows": 118,
+  "pool_reserve_rows": 117,
   "hot": [
     {
       "config_text": "trojan://humanity@202.37.33.80:443?path=%2Fassignment&security=tls&fp=chrome&type=ws&sni=www.creationlong.org#@mnproxyBot",
@@ -161,6 +161,25 @@
       "port": "8443",
       "network_type": "ws",
       "security": "tls"
+    },
+    {
+      "config_text": "vless://1f6531a1-a6eb-4274-9f51-4a0899456fcf@195.254.165.243:443?security=reality&encryption=none&pbk=zSjG6wndmLAzE8ykCBXpAm2eh0viWVSy3gt2juXF4EE&headerType=none&type=tcp&flow=xtls-rprx-vision&sni=play.google.com&sid=eaa8#@mnproxyBot",
+      "source_id": 25279,
+      "protocol": "vless",
+      "quality_score": 61.5,
+      "delivery_score": 63.93,
+      "latency": 2232.77,
+      "ping_avg_ms": 1270.04,
+      "download_mbps": 4.93,
+      "upload_mbps": 1.19,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 4.93,
+      "health_median_download_mbps": 4.93,
+      "server": "195.254.165.243",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
     },
     {
       "config_text": "trojan://-------BanV2ray------@edededededededededededede-66.poki-pakipon.ir:36268?type=grpc&spx=%2F&fp=chrome&mode=gun&sni=chi.yahoo.com&pbk=bJrhMKdMfPjEZ-EUazGR6h-uUDWAFxXG1MZlUVsd3Ak&security=reality#@mnproxyBot",
@@ -524,25 +543,6 @@
       "security": "reality"
     },
     {
-      "config_text": "vless://0b9bcbc1-b289-4a64-86fa-a5b731b65384@93.152.223.98:443?security=reality&encryption=none&pbk=QocXHwad0mV7WA5jSAcqDac3uuVBEp1WF775-CilniE&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=web.max.ru&sid=45ba18f429ad1f28#@mnproxyBot",
-      "source_id": 32709,
-      "protocol": "vless",
-      "quality_score": 56.5,
-      "delivery_score": 73.41,
-      "latency": 693.86,
-      "ping_avg_ms": 776.94,
-      "download_mbps": 4.01,
-      "upload_mbps": 0.63,
-      "download_source": "pool_health_median",
-      "health_status": "healthy",
-      "health_avg_download_mbps": 4.01,
-      "health_median_download_mbps": 4.01,
-      "server": "93.152.223.98",
-      "port": "443",
-      "network_type": "tcp",
-      "security": "reality"
-    },
-    {
       "config_text": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@151.115.167.97:8880?security=none&type=grpc#@mnproxyBot",
       "source_id": 32384,
       "protocol": "vless",
@@ -600,6 +600,25 @@
       "security": "tls"
     },
     {
+      "config_text": "vless://8bba3194-4856-46d1-8319-075817d87eb1@nl15.sodahub.online:443?security=reality&encryption=none&pbk=oGgupP3uX0TNyFwuxNYaFj-IQ8EPhCuKfJdaOHiMnV0&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=nl15.sodahub.online&sid=c334408a1056aaf8#@mnproxyBot",
+      "source_id": 29779,
+      "protocol": "vless",
+      "quality_score": 40.5,
+      "delivery_score": 38.26,
+      "latency": 4982.72,
+      "ping_avg_ms": 1125.9,
+      "download_mbps": 3.88,
+      "upload_mbps": 0.0,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 3.88,
+      "health_median_download_mbps": 3.88,
+      "server": "nl15.sodahub.online",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "reality"
+    },
+    {
       "config_text": "trojan://-----------BanV2ray-----------@uupupupuppupupupuuppupupupupuup-11.poki-pakipon.ir:26378?security=reality&pbk=6PX0SCkt6TANowjz80Ugiv4cSg0vF8g0mVt4WbyIGhI&fp=chrome&type=grpc&sni=chi.yahoo.com&sid=8c1d45d1#@mnproxyBot",
       "source_id": 33383,
       "protocol": "trojan",
@@ -652,25 +671,6 @@
       "health_avg_download_mbps": 3.8,
       "health_median_download_mbps": 3.8,
       "server": "pla.allonetworks.ru",
-      "port": "443",
-      "network_type": "tcp",
-      "security": "reality"
-    },
-    {
-      "config_text": "vless://8bba3194-4856-46d1-8319-075817d87eb1@nl15.sodahub.online:443?security=reality&encryption=none&pbk=oGgupP3uX0TNyFwuxNYaFj-IQ8EPhCuKfJdaOHiMnV0&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=nl15.sodahub.online&sid=c334408a1056aaf8#@mnproxyBot",
-      "source_id": 29779,
-      "protocol": "vless",
-      "quality_score": 40.5,
-      "delivery_score": 38.08,
-      "latency": 4982.72,
-      "ping_avg_ms": 1125.9,
-      "download_mbps": 3.79,
-      "upload_mbps": 0.0,
-      "download_source": "pool_health_median",
-      "health_status": "healthy",
-      "health_avg_download_mbps": 3.79,
-      "health_median_download_mbps": 3.79,
-      "server": "nl15.sodahub.online",
       "port": "443",
       "network_type": "tcp",
       "security": "reality"
