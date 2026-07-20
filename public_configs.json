@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T00:58:13.548250Z",
+  "generated_at": "2026-07-20T01:08:21.814844Z",
   "version": 2,
   "strategy": "operator_pool_authoritative_health_metrics",
   "operator": "irancell",
@@ -123,6 +123,25 @@
       "port": "80",
       "network_type": "ws",
       "security": "none"
+    },
+    {
+      "config_text": "trojan://dh-Ws-YoJIgTYLZ-A5VljeduVse-vhDl7Q@185.137.157.140:443?allowInsecure=0&sni=185.137.157.140#@mnproxyBot",
+      "source_id": 33919,
+      "protocol": "trojan",
+      "quality_score": 70.5,
+      "delivery_score": 92.45,
+      "latency": 686.54,
+      "ping_avg_ms": 678.06,
+      "download_mbps": 6.08,
+      "upload_mbps": 0.93,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 6.08,
+      "health_median_download_mbps": 6.08,
+      "server": "185.137.157.140",
+      "port": "443",
+      "network_type": "tcp",
+      "security": "tls"
     },
     {
       "config_text": "trojan://humanity@165.215.250.14:443?encryption=none&security=tls&sni=www.ignitelimit.com&type=ws&host=www.ignitelimit.com&path=%2Fassignment#@mnproxyBot",
@@ -733,6 +752,25 @@
       "security": "tls"
     },
     {
+      "config_text": "vmess://eyJ2IjoiMiIsInBzIjoiQG1ucHJveHlCb3QiLCJhZGQiOiIyY2RuLm5qa3JwbC5jb20iLCJwb3J0IjoiNDQzIiwiaWQiOiJhMDQ0OWIzMy1kN2Y2LTQyYTUtOGJkYy0zYjVlNzI3ZWM5ZjgiLCJhaWQiOiIwIiwic2N5IjoiYXV0byIsIm5ldCI6IndzIiwidHlwZSI6Im5vbmUiLCJob3N0IjoiIiwicGF0aCI6IiIsInRscyI6InRscyIsInNuaSI6IjJjZG4ubmprcnBsLmNvbSIsInRlc3RfbmFtZSI6IjUwIn0=",
+      "source_id": 33712,
+      "protocol": "vmess",
+      "quality_score": 29.5,
+      "delivery_score": 20.9,
+      "latency": 2105.08,
+      "ping_avg_ms": 1879.99,
+      "download_mbps": 3.7,
+      "upload_mbps": 0.0,
+      "download_source": "pool_health_median",
+      "health_status": "healthy",
+      "health_avg_download_mbps": 3.7,
+      "health_median_download_mbps": 3.7,
+      "server": "2cdn.njkrpl.com",
+      "port": "443",
+      "network_type": "ws",
+      "security": "tls"
+    },
+    {
       "config_text": "trojan://0_Oms89nH82l_Ki813_Nxmw81_Rbt_Jq190Kl_m@167.150.100.133:450?security=tls&insecure=0&headerType=none&fp=chrome&type=tcp&allowInsecure=0&sni=grape-power-sg.roxa.org#@mnproxyBot",
       "source_id": 33155,
       "protocol": "trojan",
@@ -826,44 +864,6 @@
       "port": "443",
       "network_type": "ws",
       "security": "tls"
-    },
-    {
-      "config_text": "trojan://-----------BanV2ray-----------@uupupupuppupupupuuppupupupupuup-11.poki-pakipon.ir:26378?mode=gun&sni=chi.yahoo.com&fp=chrome&pbk=6PX0SCkt6TANowjz80Ugiv4cSg0vF8g0mVt4WbyIGhI&security=reality&sid=8c1d45d1&type=grpc#@mnproxyBot",
-      "source_id": 33988,
-      "protocol": "trojan",
-      "quality_score": 56.5,
-      "delivery_score": 67.41,
-      "latency": 997.17,
-      "ping_avg_ms": 873.07,
-      "download_mbps": 2.88,
-      "upload_mbps": 1.05,
-      "download_source": "pool_health_median",
-      "health_status": "healthy",
-      "health_avg_download_mbps": 2.88,
-      "health_median_download_mbps": 2.88,
-      "server": "uupupupuppupupupuuppupupupupuup-11.poki-pakipon.ir",
-      "port": "26378",
-      "network_type": "grpc",
-      "security": "reality"
-    },
-    {
-      "config_text": "vless://37182b68-6422-4414-9518-7df6776c0150@de2-unlimited.pavilof.ir:1020?encryption=none&flow=xtls-rprx-vision&security=reality&sni=yahoo.com&fp=chrome&pbk=jILgyIiDR7xY8WDrU9EMx_iXUi6nKr3LapCgglBVBAU&sid=3fa2fdb7dce16b8b&type=tcp&headerType=none#@mnproxyBot",
-      "source_id": 32629,
-      "protocol": "vless",
-      "quality_score": 53.0,
-      "delivery_score": 56.63,
-      "latency": 2853.63,
-      "ping_avg_ms": 1116.67,
-      "download_mbps": 2.86,
-      "upload_mbps": 0.97,
-      "download_source": "pool_health_median",
-      "health_status": "healthy",
-      "health_avg_download_mbps": 2.86,
-      "health_median_download_mbps": 2.86,
-      "server": "de2-unlimited.pavilof.ir",
-      "port": "1020",
-      "network_type": "tcp",
-      "security": "reality"
     }
   ],
   "configs": [
